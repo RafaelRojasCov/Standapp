@@ -5,6 +5,12 @@ struct StandappApp: App {
 
     @StateObject private var settings = AppSettings()
 
+    init() {
+        // Touch the shared instance early so the UNUserNotificationCenterDelegate
+        // is registered before any pending notification response is delivered.
+        _ = NotificationManager.shared
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()

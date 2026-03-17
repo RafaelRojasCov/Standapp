@@ -1,0 +1,32 @@
+# Xcode build artifacts
+build/
+DerivedData/
+*.xcuserstate
+*.xcuserdatad
+*.xccheckout
+*.moved-aside
+
+# Xcode user-specific files
+xcuserdata/
+*.xcuserdata
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Sparkle distribution
+Sparkle/
+
+# Carthage
+Carthage/Build/
+
+# CocoaPods
+Pods/
+
+# Playgrounds
+timeline.xctimeline
+playground.xcworkspace

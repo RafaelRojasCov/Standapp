@@ -27,23 +27,25 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
 
     /// Cancels all pending reminders and schedules new ones based on `settings`.
     func reschedule(with settings: AppSettings) {
-        let center = UNUserNotificationCenter.current()
+        let center   = UNUserNotificationCenter.current()
+        let weekdays = settings.scheduledWeekdays
+        let hour     = settings.scheduledHour
+        let minute   = settings.scheduledMinute
 
-        // Remove all previously scheduled reminders.
+        // Remove existing reminders first, then schedule new ones inside the
+        // callback so the two operations are properly serialised and the newly
+        // added requests are never accidentally removed.
         center.getPendingNotificationRequests { requests in
+
             let ids = requests
                 .filter { $0.identifier.hasPrefix(self.identifierBase) }
                 .map(\.identifier)
             center.removePendingNotificationRequests(withIdentifiers: ids)
-        }
 
-        // Schedule one notification per enabled weekday.
-        for weekday in settings.scheduledWeekdays {
-            scheduleNotification(
-                weekday: weekday,
-                hour: settings.scheduledHour,
-                minute: settings.scheduledMinute
-            )
+            // Schedule one notification per enabled weekday.
+            for weekday in weekdays {
+                self.scheduleNotification(weekday: weekday, hour: hour, minute: minute)
+            }
         }
     }
 
@@ -54,8 +56,13 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
-        // Bring the app to the front.
-        NSApplication.shared.activate(ignoringOtherApps: true)
+        // Bring the app to the front and make sure the main window is visible.
+        // Must run on the main thread because AppKit UI calls require it.
+        DispatchQueue.main.async {
+            NSApplication.shared.activate(ignoringOtherApps: true)
+            NSApplication.shared.windows.first(where: { $0.canBecomeMain })?
+                .makeKeyAndOrderFront(nil)
+        }
         completionHandler()
     }
 
@@ -86,6 +93,10 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
         let id      = "\(identifierBase).\(weekday)"
         let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
 
-        UNUserNotificationCenter.current().add(request) { _ in }
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error {
+                print("[NotificationManager] Failed to schedule weekday \(weekday): \(error)")
+            }
+        }
     }
 }

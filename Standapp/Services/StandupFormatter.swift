@@ -65,6 +65,8 @@ struct StandupFormatter {
     }
 
     private func sanitizeSlackLabel(_ text: String) -> String {
+        // Slack uses `<url|label>` markup; these replacements prevent label text
+        // from breaking the delimiter syntax when users type reserved characters.
         text
             .replacingOccurrences(of: "|", with: "¦")
             .replacingOccurrences(of: "<", with: "‹")

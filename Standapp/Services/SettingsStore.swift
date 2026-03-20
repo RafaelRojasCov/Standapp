@@ -8,6 +8,7 @@ final class SettingsStore {
 
     private let defaults = UserDefaults.standard
     private let settingsKey = "com.standapp.settings"
+    private let defaultWeekdays = [2, 3, 4, 5, 6]
 
     // MARK: - Codable snapshot
 
@@ -88,7 +89,7 @@ final class SettingsStore {
         guard !settings.isLoading else { return }
         var profiles = settings.profiles
         if profiles.isEmpty {
-            profiles = [StandupProfile()]
+            profiles = [makeDefaultProfile()]
         }
         profiles[0].jiraBaseUrl = settings.jiraBaseUrl
         profiles[0].slackChannelUri = settings.slackChannelUri
@@ -126,5 +127,16 @@ final class SettingsStore {
         settings.blockerState       = snapshot.blockerState
         settings.blockersItems      = snapshot.blockersItems
         settings.isLoading          = false
+    }
+
+    private func makeDefaultProfile() -> StandupProfile {
+        StandupProfile(
+            name: "Default",
+            jiraBaseUrl: "",
+            slackChannelUri: "",
+            scheduledWeekdays: defaultWeekdays,
+            scheduledHour: 9,
+            scheduledMinute: 0
+        )
     }
 }

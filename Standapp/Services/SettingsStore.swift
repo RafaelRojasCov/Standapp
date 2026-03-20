@@ -25,6 +25,9 @@ final class SettingsStore {
             case todayItems
             case blockerState
             case blockersItems
+        }
+
+        private enum LegacyCodingKeys: String, CodingKey {
             case jiraBaseUrl
             case slackChannelUri
             case scheduledWeekdays
@@ -49,16 +52,17 @@ final class SettingsStore {
 
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
+            let legacyContainer = try decoder.container(keyedBy: LegacyCodingKeys.self)
 
             if let decodedProfiles = try container.decodeIfPresent([StandupProfile].self, forKey: .profiles),
                !decodedProfiles.isEmpty {
                 profiles = decodedProfiles
             } else {
-                let jiraBaseUrl = try container.decodeIfPresent(String.self, forKey: .jiraBaseUrl) ?? ""
-                let slackChannelUri = try container.decodeIfPresent(String.self, forKey: .slackChannelUri) ?? ""
-                let scheduledWeekdays = try container.decodeIfPresent([Int].self, forKey: .scheduledWeekdays) ?? [2, 3, 4, 5, 6]
-                let scheduledHour = try container.decodeIfPresent(Int.self, forKey: .scheduledHour) ?? 9
-                let scheduledMinute = try container.decodeIfPresent(Int.self, forKey: .scheduledMinute) ?? 0
+                let jiraBaseUrl = try legacyContainer.decodeIfPresent(String.self, forKey: .jiraBaseUrl) ?? ""
+                let slackChannelUri = try legacyContainer.decodeIfPresent(String.self, forKey: .slackChannelUri) ?? ""
+                let scheduledWeekdays = try legacyContainer.decodeIfPresent([Int].self, forKey: .scheduledWeekdays) ?? [2, 3, 4, 5, 6]
+                let scheduledHour = try legacyContainer.decodeIfPresent(Int.self, forKey: .scheduledHour) ?? 9
+                let scheduledMinute = try legacyContainer.decodeIfPresent(Int.self, forKey: .scheduledMinute) ?? 0
                 profiles = [StandupProfile(
                     name: "Default",
                     jiraBaseUrl: jiraBaseUrl,
@@ -75,7 +79,7 @@ final class SettingsStore {
 
             if let decodedState = try container.decodeIfPresent(BlockerState.self, forKey: .blockerState) {
                 blockerState = decodedState
-            } else if let legacyHasBlockers = try container.decodeIfPresent(Bool.self, forKey: .hasBlockers) {
+            } else if let legacyHasBlockers = try legacyContainer.decodeIfPresent(Bool.self, forKey: .hasBlockers) {
                 blockerState = legacyHasBlockers ? .hasBlockers : .noBlockers
             } else {
                 blockerState = .unanswered

@@ -81,7 +81,7 @@ struct StandupFormView: View {
 
     private var blockersSection: some View {
         @Bindable var viewSettings = settings
-        VStack(alignment: .leading, spacing: 12) {
+        return VStack(alignment: .leading, spacing: 12) {
             Text("🚧 Blockers")
                 .font(.headline)
 

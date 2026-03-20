@@ -28,8 +28,8 @@ struct SettingsView: View {
                     Text("JIRA Base URL")
                         .font(.headline)
                     TextField(
-                        "https://company.atlassian.net",
-                        text: $bindableSettings.jiraBaseUrl
+                        text: $bindableSettings.jiraBaseUrl,
+                        prompt: Text("https://company.atlassian.net")
                     )
                     .textFieldStyle(.roundedBorder)
                     .frame(maxWidth: .infinity)
@@ -43,8 +43,8 @@ struct SettingsView: View {
                     Text("Slack Channel URI")
                         .font(.headline)
                     TextField(
-                        "slack://channel?team=T123&id=C123",
-                        text: $bindableSettings.slackChannelUri
+                        text: $bindableSettings.slackChannelUri,
+                        prompt: Text("slack://channel?team=T123&id=C123")
                     )
                     .textFieldStyle(.roundedBorder)
                     .frame(maxWidth: .infinity)

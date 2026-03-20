@@ -32,12 +32,12 @@ struct SettingsView: View {
                         text: $bindableSettings.jiraBaseUrl
                     )
                     .textFieldStyle(.roundedBorder)
+                    .frame(maxWidth: .infinity)
                     Text("Example: https://company.atlassian.net")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-
-                Divider()
+                .frame(maxWidth: .infinity, alignment: .leading)
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Slack Channel URI")
@@ -47,10 +47,12 @@ struct SettingsView: View {
                         text: $bindableSettings.slackChannelUri
                     )
                     .textFieldStyle(.roundedBorder)
+                    .frame(maxWidth: .infinity)
                     Text("Example: slack://channel?team=T123&id=C123")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             } header: {
                 Text("Integrations")
                     .font(.headline)

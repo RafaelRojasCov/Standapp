@@ -8,26 +8,48 @@ struct SettingsView: View {
 
     /// Weekday labels (index 0 = Sunday, 1 = Monday … 6 = Saturday)
     private let weekdayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    private var hasGrantedNotificationPermission: Bool {
+        notificationManager.authorizationStatus == .authorized || notificationManager.authorizationStatus == .provisional
+    }
+
+    private var requestPermissionButtonTitle: String {
+        if hasGrantedNotificationPermission {
+            return "Permissions granted"
+        }
+        return notificationManager.authorizationStatus == .notDetermined ? "Request Permissions" : "Re-check Permissions"
+    }
 
     var body: some View {
         @Bindable var bindableSettings = settings
         Form {
             // ── Integrations ──────────────────────────────────────────────────
             Section {
-                LabeledContent("JIRA Base URL") {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("JIRA Base URL")
+                        .font(.headline)
                     TextField(
                         "https://company.atlassian.net",
                         text: $bindableSettings.jiraBaseUrl
                     )
                     .textFieldStyle(.roundedBorder)
+                    Text("Example: https://company.atlassian.net")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
 
-                LabeledContent("Slack Channel URI") {
+                Divider()
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Slack Channel URI")
+                        .font(.headline)
                     TextField(
                         "slack://channel?team=T123&id=C123",
                         text: $bindableSettings.slackChannelUri
                     )
                     .textFieldStyle(.roundedBorder)
+                    Text("Example: slack://channel?team=T123&id=C123")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
             } header: {
                 Text("Integrations")
@@ -37,7 +59,9 @@ struct SettingsView: View {
 
             // ── Scheduler ─────────────────────────────────────────────────────
             Section {
-                LabeledContent("Time") {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Time")
+                        .font(.headline)
                     HStack(spacing: 6) {
                         Picker("Hour", selection: $bindableSettings.scheduledHour) {
                             ForEach(0..<24, id: \.self) { h in
@@ -60,7 +84,11 @@ struct SettingsView: View {
                     }
                 }
 
-                LabeledContent("Days") {
+                Divider()
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Days")
+                        .font(.headline)
                     HStack(spacing: 6) {
                         // Weekday 1 = Sunday … 7 = Saturday (Calendar convention)
                         ForEach(1...7, id: \.self) { day in
@@ -81,7 +109,7 @@ struct SettingsView: View {
                     .font(.headline)
                     .padding(.bottom, 2)
             } footer: {
-                Text("A local notification will appear at the selected time on selected days.")
+                Text("Aparecerá una notificación local a la hora seleccionada en los días elegidos.")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -91,15 +119,16 @@ struct SettingsView: View {
                 Label("Notifications are disabled in System Settings. Scheduled reminders will not appear.", systemImage: "exclamationmark.triangle.fill")
                     .foregroundStyle(.red)
             }
-            if notificationManager.authorizationStatus == .authorized || notificationManager.authorizationStatus == .provisional {
-                Label("Notification permission is granted.", systemImage: "checkmark.circle.fill")
+            if hasGrantedNotificationPermission {
+                Label("Permissions granted.", systemImage: "checkmark.circle.fill")
                     .foregroundStyle(.green)
             }
             HStack {
                 Spacer()
-                Button("Request / Re-check Notification Permission") {
+                Button(requestPermissionButtonTitle) {
                     notificationManager.requestAuthorization()
                 }
+                .disabled(hasGrantedNotificationPermission)
 
                 Button("Save & Schedule") {
                     notificationManager.reschedule(with: settings)

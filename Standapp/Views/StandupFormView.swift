@@ -33,14 +33,19 @@ struct StandupFormView: View {
                 }
 
                 Divider()
-
-                actionBar
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
 
             Divider()
 
-            previewPanel
+            VStack(spacing: 0) {
+                previewPanel
+
+                Divider()
+
+                actionBar
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
         .background(Color(NSColor.windowBackgroundColor))
         .alert("Unable to open Slack", isPresented: Binding(
@@ -69,8 +74,7 @@ struct StandupFormView: View {
             }
             .pickerStyle(.segmented)
             .labelsHidden()
-            .frame(maxWidth: 420)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .fixedSize(horizontal: true, vertical: false)
 
             if viewSettings.blockerState == .hasBlockers {
                 StandupSectionView(

@@ -120,7 +120,11 @@ struct StandupFormView: View {
     }
 
     private var markdownPreviewText: AttributedString {
-        (try? AttributedString(markdown: previewText)) ?? AttributedString(previewText)
+        let options = AttributedString.MarkdownParsingOptions(
+            interpretedSyntax: .inlineOnlyPreservingWhitespace
+        )
+        return (try? AttributedString(markdown: previewText, options: options))
+            ?? AttributedString(previewText)
     }
 
     private var isFormReadyToSubmit: Bool {

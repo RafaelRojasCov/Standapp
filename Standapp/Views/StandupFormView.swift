@@ -80,11 +80,12 @@ struct StandupFormView: View {
     }
 
     private var blockersSection: some View {
+        @Bindable var viewSettings = settings
         VStack(alignment: .leading, spacing: 12) {
             Text("🚧 Blockers")
                 .font(.headline)
 
-            Picker("", selection: $bindableSettings.blockerState) {
+            Picker("", selection: $viewSettings.blockerState) {
                 Text("Not Answered").tag(BlockerState.unanswered)
                 Text("No Blockers").tag(BlockerState.noBlockers)
                 Text("Yes, I Have Blockers").tag(BlockerState.hasBlockers)
@@ -93,10 +94,10 @@ struct StandupFormView: View {
             .labelsHidden()
             .frame(maxWidth: 420)
 
-            if bindableSettings.blockerState == .hasBlockers {
+            if viewSettings.blockerState == .hasBlockers {
                 StandupSectionView(
                     title: nil,
-                    items: $bindableSettings.blockersItems
+                    items: $viewSettings.blockersItems
                 )
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }

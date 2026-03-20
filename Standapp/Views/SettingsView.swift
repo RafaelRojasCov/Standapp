@@ -27,10 +27,7 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("JIRA Base URL")
                         .font(.headline)
-                    TextField(
-                        text: $bindableSettings.jiraBaseUrl,
-                        prompt: Text("https://company.atlassian.net")
-                    )
+                    TextField("", text: $bindableSettings.jiraBaseUrl, prompt: Text("https://company.atlassian.net"))
                     .textFieldStyle(.roundedBorder)
                     .frame(maxWidth: .infinity)
                     Text("Example: https://company.atlassian.net")
@@ -42,10 +39,7 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Slack Channel URI")
                         .font(.headline)
-                    TextField(
-                        text: $bindableSettings.slackChannelUri,
-                        prompt: Text("slack://channel?team=T123&id=C123")
-                    )
+                    TextField("", text: $bindableSettings.slackChannelUri, prompt: Text("slack://channel?team=T123&id=C123"))
                     .textFieldStyle(.roundedBorder)
                     .frame(maxWidth: .infinity)
                     Text("Example: slack://channel?team=T123&id=C123")

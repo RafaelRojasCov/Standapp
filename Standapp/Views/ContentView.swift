@@ -14,7 +14,7 @@ struct ContentView: View {
                     } label: {
                         Label("Clear", systemImage: "trash")
                     }
-                    .toolbarItemLabelStyle(.titleAndIcon)
+                    .labelStyle(.titleAndIcon)
                     .help("Clear all entries")
                 }
                 ToolbarItem(placement: .automatic) {
@@ -23,7 +23,7 @@ struct ContentView: View {
                     } label: {
                         Label("Settings", systemImage: "gearshape")
                     }
-                    .toolbarItemLabelStyle(.titleAndIcon)
+                    .labelStyle(.titleAndIcon)
                     .help("Open Settings")
                 }
             }

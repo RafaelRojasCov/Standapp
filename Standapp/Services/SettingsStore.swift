@@ -81,6 +81,15 @@ final class SettingsStore {
                 blockerState = .unanswered
             }
         }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(profiles, forKey: .profiles)
+            try container.encode(yesterdayItems, forKey: .yesterdayItems)
+            try container.encode(todayItems, forKey: .todayItems)
+            try container.encode(blockerState, forKey: .blockerState)
+            try container.encode(blockersItems, forKey: .blockersItems)
+        }
     }
 
     // MARK: - Public API

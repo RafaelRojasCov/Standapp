@@ -9,8 +9,8 @@ A native macOS application (SwiftUI, macOS 14+) that streamlines daily standup r
 | Feature | Details |
 |---|---|
 | **Dynamic form** | Three sections — Yesterday, Today, Blockers — each with unlimited rows (text area + ticket ID) |
-| **JIRA ticket linking** | Combines a configurable base URL with the ticket ID to produce `[TICKET-123](https://…/browse/TICKET-123)` |
-| **Blockers toggle** | "No Blockers / Yes, I Have Blockers" segmented control; hides input fields when No is selected |
+| **JIRA ticket linking** | Combines a configurable base URL with the ticket ID to produce `(<https://…/browse/TICKET-123|TICKET-123>)` |
+| **Blockers toggle** | "Not Answered / No Blockers / Yes, I Have Blockers" segmented control; disables submit until answered |
 | **Copy & Open Slack** | Aggregates all inputs into Markdown, copies to clipboard, then opens the configured Slack channel via URI scheme |
 | **Settings** | JIRA base URL, Slack channel URI, scheduled time & weekdays — all persisted via UserDefaults |
 | **Scheduled notifications** | Local notifications at the configured time on selected weekdays; clicking focuses the app |
@@ -81,10 +81,10 @@ Open **Settings** (gear icon in the toolbar or ⌘,):
 
 ```
 *Yesterday*
-• Fixed login redirect bug [DEV-101](https://company.atlassian.net/browse/DEV-101)
+• Fixed login redirect bug (<https://company.atlassian.net/browse/DEV-101|DEV-101>)
 
 *Today*
-• Implement notification scheduler [DEV-102](https://company.atlassian.net/browse/DEV-102)
+• Implement notification scheduler (<https://company.atlassian.net/browse/DEV-102|DEV-102>)
 
 *Blockers*
 • No blockers

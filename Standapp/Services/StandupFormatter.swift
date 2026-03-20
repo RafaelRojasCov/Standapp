@@ -19,7 +19,7 @@ struct StandupFormatter {
 
         lines.append("")
         lines.append("*Blockers*")
-        if settings.hasBlockers {
+        if settings.blockerState == .hasBlockers {
             lines.append(contentsOf: formatItems(settings.blockersItems))
         } else {
             lines.append("• No blockers")
@@ -49,10 +49,27 @@ struct StandupFormatter {
         let base = settings.jiraBaseUrl
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        let safeLabel = sanitizeSlackLabel(ticketId)
 
         if base.isEmpty {
-            return "[\(ticketId)]"
+            return "(\(safeLabel))"
         }
-        return "[\(ticketId)](\(base)/browse/\(ticketId))"
+        guard let baseURL = URL(string: "\(base)/") else {
+            return "(\(safeLabel))"
+        }
+        let url = baseURL
+            .appendingPathComponent("browse")
+            .appendingPathComponent(ticketId)
+            .absoluteString
+        return "(<\(url)|\(safeLabel)>)"
+    }
+
+    private func sanitizeSlackLabel(_ text: String) -> String {
+        // Slack uses `<url|label>` markup; these replacements prevent label text
+        // from breaking the delimiter syntax when users type reserved characters.
+        text
+            .replacingOccurrences(of: "|", with: "¦")
+            .replacingOccurrences(of: "<", with: "‹")
+            .replacingOccurrences(of: ">", with: "›")
     }
 }

@@ -6,6 +6,7 @@ struct StandupFormView: View {
     @Environment(AppSettings.self) private var settings
     @State private var copyConfirmed = false
     @State private var alertMessage: String?
+    private let previewMinHeight: CGFloat = 88
 
     var body: some View {
         @Bindable var bindableSettings = settings
@@ -86,7 +87,6 @@ struct StandupFormView: View {
                 .font(.headline)
 
             Picker("", selection: $viewSettings.blockerState) {
-                Text("Not Answered").tag(BlockerState.unanswered)
                 Text("No Blockers").tag(BlockerState.noBlockers)
                 Text("Yes, I Have Blockers").tag(BlockerState.hasBlockers)
             }
@@ -112,8 +112,8 @@ struct StandupFormView: View {
             Text(previewText)
                 .font(.caption)
                 .foregroundColor(.secondary)
-                .lineLimit(2)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .lineLimit(4)
+                .frame(maxWidth: .infinity, minHeight: previewMinHeight, alignment: .topLeading)
 
             Spacer(minLength: 12)
 
@@ -148,7 +148,6 @@ struct StandupFormView: View {
             .contains { !$0.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
         return yesterdayHasContent
             && todayHasContent
-            && settings.blockerState != .unanswered
     }
 
     private func copyAndOpenSlack() {
@@ -183,7 +182,7 @@ struct StandupFormView: View {
     private func clearAll() {
         settings.yesterdayItems = [StandupItem()]
         settings.todayItems     = [StandupItem()]
-        settings.blockerState   = .unanswered
+        settings.blockerState   = .noBlockers
         settings.blockersItems  = [StandupItem()]
     }
 }

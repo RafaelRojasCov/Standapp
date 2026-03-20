@@ -84,7 +84,7 @@ final class NotificationManager: NSObject, ObservableObject, UNUserNotificationC
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        completionHandler([.banner, .sound])
+        completionHandler([.banner, .sound, .badge, .list])
     }
 
     // MARK: - Private

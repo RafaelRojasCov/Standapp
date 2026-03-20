@@ -53,7 +53,7 @@ final class AppSettings {
     var todayItems: [StandupItem] = [StandupItem()] {
         didSet { SettingsStore.shared.save(self) }
     }
-    var blockerState: BlockerState = .unanswered {
+    var blockerState: BlockerState = .noBlockers {
         didSet { SettingsStore.shared.save(self) }
     }
     var blockersItems: [StandupItem] = [StandupItem()] {

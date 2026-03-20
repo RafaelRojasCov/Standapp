@@ -31,7 +31,7 @@ struct StandupSectionView: View {
                     .frame(width: ticketFieldWidth, alignment: .leading)
 
                 Color.clear
-                    .frame(width: removeButtonWidth, height: 1)
+                    .frame(width: removeButtonWidth)
             }
 
             ForEach($items) { $item in
@@ -71,7 +71,7 @@ struct StandupSectionView: View {
 
 // MARK: - Row
 
-/// A single row: description text editor (left) + ticket ID field (right).
+/// A single row: one-line status field (left) + ticket ID field (right).
 struct StandupItemRowView: View {
 
     @Binding var item: StandupItem

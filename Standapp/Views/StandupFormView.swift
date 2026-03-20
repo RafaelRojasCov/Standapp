@@ -6,6 +6,7 @@ struct StandupFormView: View {
     @Environment(AppSettings.self) private var settings
     @State private var copyConfirmed = false
     @State private var alertMessage: String?
+    private let previewMinHeight: CGFloat = 88
 
     var body: some View {
         @Bindable var bindableSettings = settings
@@ -43,11 +44,6 @@ struct StandupFormView: View {
             actionBar
         }
         .background(Color(NSColor.windowBackgroundColor))
-        .onAppear {
-            if settings.blockerState == .unanswered {
-                settings.blockerState = .noBlockers
-            }
-        }
         .alert("Unable to open Slack", isPresented: Binding(
             get: { alertMessage != nil },
             set: { isPresented in
@@ -117,8 +113,7 @@ struct StandupFormView: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .lineLimit(4)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .frame(minHeight: 70, alignment: .topLeading)
+                .frame(maxWidth: .infinity, minHeight: previewMinHeight, alignment: .topLeading)
 
             Spacer(minLength: 12)
 
@@ -153,7 +148,6 @@ struct StandupFormView: View {
             .contains { !$0.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
         return yesterdayHasContent
             && todayHasContent
-            && settings.blockerState != .unanswered
     }
 
     private func copyAndOpenSlack() {

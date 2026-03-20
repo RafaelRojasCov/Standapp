@@ -82,7 +82,7 @@ final class SettingsStore {
             } else if let legacyHasBlockers = try legacyContainer.decodeIfPresent(Bool.self, forKey: .hasBlockers) {
                 blockerState = legacyHasBlockers ? .hasBlockers : .noBlockers
             } else {
-                blockerState = .unanswered
+                blockerState = .noBlockers
             }
         }
 

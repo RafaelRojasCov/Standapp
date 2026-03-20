@@ -26,9 +26,6 @@ final class NotificationManager: NSObject, ObservableObject, UNUserNotificationC
             }
             DispatchQueue.main.async {
                 self.refreshAuthorizationStatus()
-                if granted {
-                    NSApplication.shared.activate(ignoringOtherApps: true)
-                }
             }
         }
     }

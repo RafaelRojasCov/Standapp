@@ -21,8 +21,9 @@ final class NotificationManager: NSObject, ObservableObject, UNUserNotificationC
 
     func requestAuthorization() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-            _ = granted
-            _ = error
+            if let error {
+                print("[NotificationManager] Authorization request failed: \(error)")
+            }
             DispatchQueue.main.async {
                 self.refreshAuthorizationStatus()
             }

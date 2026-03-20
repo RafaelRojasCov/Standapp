@@ -13,7 +13,10 @@ struct SettingsView: View {
     }
 
     private var requestPermissionButtonTitle: String {
-        notificationManager.authorizationStatus == .notDetermined ? "Request Permissions" : "Re-check Permissions"
+        if hasGrantedNotificationPermission {
+            return "Permissions granted"
+        }
+        return notificationManager.authorizationStatus == .notDetermined ? "Request Permissions" : "Re-check Permissions"
     }
 
     var body: some View {
@@ -29,7 +32,7 @@ struct SettingsView: View {
                         text: $bindableSettings.jiraBaseUrl
                     )
                     .textFieldStyle(.roundedBorder)
-                    Text("Ejemplo: https://company.atlassian.net")
+                    Text("Example: https://company.atlassian.net")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -44,7 +47,7 @@ struct SettingsView: View {
                         text: $bindableSettings.slackChannelUri
                     )
                     .textFieldStyle(.roundedBorder)
-                    Text("Ejemplo: slack://channel?team=T123&id=C123")
+                    Text("Example: slack://channel?team=T123&id=C123")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }

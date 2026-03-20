@@ -10,14 +10,14 @@ struct SettingsView: View {
     private let weekdayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
     var body: some View {
-        @Bindable var settings = settings
+        @Bindable var bindableSettings = settings
         Form {
             // ── Integrations ──────────────────────────────────────────────────
             Section {
                 LabeledContent("JIRA Base URL") {
                     TextField(
                         "https://company.atlassian.net",
-                        text: $settings.jiraBaseUrl
+                        text: $bindableSettings.jiraBaseUrl
                     )
                     .textFieldStyle(.roundedBorder)
                 }
@@ -25,7 +25,7 @@ struct SettingsView: View {
                 LabeledContent("Slack Channel URI") {
                     TextField(
                         "slack://channel?team=T123&id=C123",
-                        text: $settings.slackChannelUri
+                        text: $bindableSettings.slackChannelUri
                     )
                     .textFieldStyle(.roundedBorder)
                 }
@@ -39,7 +39,7 @@ struct SettingsView: View {
             Section {
                 LabeledContent("Time") {
                     HStack(spacing: 6) {
-                        Picker("Hour", selection: $settings.scheduledHour) {
+                        Picker("Hour", selection: $bindableSettings.scheduledHour) {
                             ForEach(0..<24, id: \.self) { h in
                                 Text(String(format: "%02d", h)).tag(h)
                             }
@@ -50,7 +50,7 @@ struct SettingsView: View {
                         Text(":")
                             .font(.body.bold())
 
-                        Picker("Minute", selection: $settings.scheduledMinute) {
+                        Picker("Minute", selection: $bindableSettings.scheduledMinute) {
                             ForEach([0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55], id: \.self) { m in
                                 Text(String(format: "%02d", m)).tag(m)
                             }
@@ -65,7 +65,7 @@ struct SettingsView: View {
                         // Weekday 1 = Sunday … 7 = Saturday (Calendar convention)
                         ForEach(1...7, id: \.self) { day in
                             let label   = weekdayLabels[day - 1]
-                            let enabled = settings.scheduledWeekdays.contains(day)
+                            let enabled = bindableSettings.scheduledWeekdays.contains(day)
                             Button(label) {
                                 toggleWeekday(day)
                             }

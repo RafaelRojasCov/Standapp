@@ -113,7 +113,10 @@ final class SettingsStore {
         else { return }
 
         settings.isLoading          = true
-        let profile = snapshot.profiles.first ?? StandupProfile()
+        guard let profile = snapshot.profiles.first else {
+            settings.isLoading = false
+            return
+        }
         settings.profiles           = snapshot.profiles
         settings.jiraBaseUrl        = profile.jiraBaseUrl
         settings.slackChannelUri    = profile.slackChannelUri

@@ -8,7 +8,7 @@ struct StandupFormView: View {
     @State private var alertMessage: String?
 
     var body: some View {
-        @Bindable var settings = settings
+        @Bindable var bindableSettings = settings
         VStack(spacing: 0) {
             // ── Header ────────────────────────────────────────────────────────
             headerBar
@@ -20,14 +20,14 @@ struct StandupFormView: View {
                 VStack(spacing: 24) {
                     StandupSectionView(
                         title: "🗓 Yesterday",
-                        items: $settings.yesterdayItems
+                        items: $bindableSettings.yesterdayItems
                     )
 
                     Divider()
 
                     StandupSectionView(
                         title: "📋 Today",
-                        items: $settings.todayItems
+                        items: $bindableSettings.todayItems
                     )
 
                     Divider()
@@ -84,7 +84,7 @@ struct StandupFormView: View {
             Text("🚧 Blockers")
                 .font(.headline)
 
-            Picker("", selection: $settings.blockerState) {
+            Picker("", selection: $bindableSettings.blockerState) {
                 Text("Not Answered").tag(BlockerState.unanswered)
                 Text("No Blockers").tag(BlockerState.noBlockers)
                 Text("Yes, I Have Blockers").tag(BlockerState.hasBlockers)
@@ -93,10 +93,10 @@ struct StandupFormView: View {
             .labelsHidden()
             .frame(maxWidth: 420)
 
-            if settings.blockerState == .hasBlockers {
+            if bindableSettings.blockerState == .hasBlockers {
                 StandupSectionView(
                     title: nil,
-                    items: $settings.blockersItems
+                    items: $bindableSettings.blockersItems
                 )
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }

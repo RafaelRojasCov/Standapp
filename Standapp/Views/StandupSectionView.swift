@@ -9,6 +9,8 @@ struct StandupSectionView: View {
     var title: String?
 
     @Binding var items: [StandupItem]
+    private let ticketFieldWidth: CGFloat = 140
+    private let removeButtonWidth: CGFloat = 22
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -17,8 +19,23 @@ struct StandupSectionView: View {
                     .font(.headline)
             }
 
+            HStack(spacing: 10) {
+                Text("Status")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                Text("Ticket")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .frame(width: ticketFieldWidth, alignment: .leading)
+
+                Color.clear
+                    .frame(width: removeButtonWidth, height: 1)
+            }
+
             ForEach($items) { $item in
-                StandupItemRowView(item: $item) {
+                StandupItemRowView(item: $item, ticketFieldWidth: ticketFieldWidth, removeButtonWidth: removeButtonWidth) {
                     removeItem(item)
                 }
             }
@@ -58,52 +75,28 @@ struct StandupSectionView: View {
 struct StandupItemRowView: View {
 
     @Binding var item: StandupItem
+    var ticketFieldWidth: CGFloat
+    var removeButtonWidth: CGFloat
     var onRemove: () -> Void
 
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
-            // Multi-line description editor
-            ZStack(alignment: .topLeading) {
-                if item.text.isEmpty {
-                    Text("Description…")
-                        .foregroundColor(Color(NSColor.placeholderTextColor))
-                        .padding(.leading, 5)
-                        .padding(.top, 8)
-                        .allowsHitTesting(false)
-                }
-                TextEditor(text: $item.text)
-                    .frame(minHeight: 60, maxHeight: 120)
-                    .scrollContentBackground(.hidden)
-                    .padding(4)
-                    .background(
-                        RoundedRectangle(cornerRadius: 6)
-                            .fill(Color(NSColor.controlBackgroundColor))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 6)
-                            .stroke(Color(NSColor.separatorColor), lineWidth: 0.5)
-                    )
-            }
+        HStack(spacing: 10) {
+            TextField("Status description…", text: $item.text)
+                .textFieldStyle(.roundedBorder)
+                .frame(maxWidth: .infinity)
 
-            // Ticket ID (narrow)
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Ticket")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                TextField("e.g. DEV-101", text: $item.ticketId)
-                    .textFieldStyle(.roundedBorder)
-                    .frame(width: 110)
-                    .font(.callout.monospaced())
-            }
+            TextField("e.g. DEV-101", text: $item.ticketId)
+                .textFieldStyle(.roundedBorder)
+                .frame(width: ticketFieldWidth)
+                .font(.callout.monospaced())
 
-            // Remove button
             Button(action: onRemove) {
                 Image(systemName: "minus.circle")
                     .foregroundColor(.secondary)
                     .font(.title3)
             }
             .buttonStyle(.borderless)
-            .padding(.top, 24)
+            .frame(width: removeButtonWidth)
             .help("Remove this entry")
         }
     }

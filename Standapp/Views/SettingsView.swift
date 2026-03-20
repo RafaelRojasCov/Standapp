@@ -91,9 +91,13 @@ struct SettingsView: View {
                 Label("Notifications are disabled in System Settings. Scheduled reminders will not appear.", systemImage: "exclamationmark.triangle.fill")
                     .foregroundStyle(.red)
             }
+            if notificationManager.authorizationStatus == .authorized || notificationManager.authorizationStatus == .provisional {
+                Label("Notification permission is granted.", systemImage: "checkmark.circle.fill")
+                    .foregroundStyle(.green)
+            }
             HStack {
                 Spacer()
-                Button("Request Notification Permission") {
+                Button("Request / Re-check Notification Permission") {
                     notificationManager.requestAuthorization()
                 }
 

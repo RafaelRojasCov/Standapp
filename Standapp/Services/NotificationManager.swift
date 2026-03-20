@@ -26,6 +26,9 @@ final class NotificationManager: NSObject, ObservableObject, UNUserNotificationC
             }
             DispatchQueue.main.async {
                 self.refreshAuthorizationStatus()
+                if granted {
+                    NSApplication.shared.activate(ignoringOtherApps: true)
+                }
             }
         }
     }
@@ -84,7 +87,7 @@ final class NotificationManager: NSObject, ObservableObject, UNUserNotificationC
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        completionHandler([.banner, .sound])
+        completionHandler([.banner, .sound, .badge, .list])
     }
 
     // MARK: - Private

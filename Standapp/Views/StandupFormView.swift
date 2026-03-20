@@ -43,6 +43,11 @@ struct StandupFormView: View {
             actionBar
         }
         .background(Color(NSColor.windowBackgroundColor))
+        .onAppear {
+            if settings.blockerState == .unanswered {
+                settings.blockerState = .noBlockers
+            }
+        }
         .alert("Unable to open Slack", isPresented: Binding(
             get: { alertMessage != nil },
             set: { isPresented in
@@ -86,7 +91,6 @@ struct StandupFormView: View {
                 .font(.headline)
 
             Picker("", selection: $viewSettings.blockerState) {
-                Text("Not Answered").tag(BlockerState.unanswered)
                 Text("No Blockers").tag(BlockerState.noBlockers)
                 Text("Yes, I Have Blockers").tag(BlockerState.hasBlockers)
             }
@@ -112,8 +116,9 @@ struct StandupFormView: View {
             Text(previewText)
                 .font(.caption)
                 .foregroundColor(.secondary)
-                .lineLimit(2)
+                .lineLimit(4)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(minHeight: 70, alignment: .topLeading)
 
             Spacer(minLength: 12)
 
@@ -183,7 +188,7 @@ struct StandupFormView: View {
     private func clearAll() {
         settings.yesterdayItems = [StandupItem()]
         settings.todayItems     = [StandupItem()]
-        settings.blockerState   = .unanswered
+        settings.blockerState   = .noBlockers
         settings.blockersItems  = [StandupItem()]
     }
 }

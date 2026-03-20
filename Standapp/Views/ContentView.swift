@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
 
-    @EnvironmentObject private var settings: AppSettings
+    @Environment(AppSettings.self) private var settings
     @State private var showSettings = false
 
     var body: some View {
@@ -19,7 +19,7 @@ struct ContentView: View {
             }
             .sheet(isPresented: $showSettings) {
                 SettingsView()
-                    .environmentObject(settings)
+                    .environment(settings)
                     .frame(minWidth: 460, minHeight: 420)
             }
     }
@@ -27,5 +27,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .environmentObject(AppSettings())
+        .environment(AppSettings())
 }

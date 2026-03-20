@@ -2,13 +2,15 @@ import SwiftUI
 
 struct SettingsView: View {
 
-    @EnvironmentObject private var settings: AppSettings
+    @Environment(AppSettings.self) private var settings
     @Environment(\.dismiss) private var dismiss
+    @ObservedObject private var notificationManager = NotificationManager.shared
 
     /// Weekday labels (index 0 = Sunday, 1 = Monday … 6 = Saturday)
     private let weekdayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
     var body: some View {
+        @Bindable var settings = settings
         Form {
             // ── Integrations ──────────────────────────────────────────────────
             Section {
@@ -85,14 +87,18 @@ struct SettingsView: View {
             }
 
             // ── Actions ───────────────────────────────────────────────────────
+            if notificationManager.authorizationStatus == .denied {
+                Label("Notifications are disabled in System Settings. Scheduled reminders will not appear.", systemImage: "exclamationmark.triangle.fill")
+                    .foregroundStyle(.red)
+            }
             HStack {
                 Spacer()
                 Button("Request Notification Permission") {
-                    NotificationManager.shared.requestAuthorization()
+                    notificationManager.requestAuthorization()
                 }
 
                 Button("Save & Schedule") {
-                    NotificationManager.shared.reschedule(with: settings)
+                    notificationManager.reschedule(with: settings)
                     dismiss()
                 }
                 .buttonStyle(.borderedProminent)
@@ -103,6 +109,9 @@ struct SettingsView: View {
         .formStyle(.grouped)
         .padding(20)
         .navigationTitle("Settings")
+        .onAppear {
+            notificationManager.refreshAuthorizationStatus()
+        }
     }
 
     // MARK: -
@@ -121,6 +130,6 @@ struct SettingsView: View {
 
 #Preview {
     SettingsView()
-        .environmentObject(AppSettings())
+        .environment(AppSettings())
         .frame(width: 460, height: 420)
 }

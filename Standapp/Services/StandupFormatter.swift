@@ -19,7 +19,7 @@ struct StandupFormatter {
 
         lines.append("")
         lines.append("*Blockers*")
-        if settings.hasBlockers {
+        if settings.blockerState == .hasBlockers {
             lines.append(contentsOf: formatItems(settings.blockersItems))
         } else {
             lines.append("• No blockers")
@@ -51,8 +51,8 @@ struct StandupFormatter {
             .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
 
         if base.isEmpty {
-            return "[\(ticketId)]"
+            return "(\(ticketId))"
         }
-        return "[\(ticketId)](\(base)/browse/\(ticketId))"
+        return "(<\(base)/browse/\(ticketId)|\(ticketId)>)"
     }
 }

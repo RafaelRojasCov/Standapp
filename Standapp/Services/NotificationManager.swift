@@ -1,10 +1,11 @@
 import AppKit
+import Combine
 import Foundation
 import UserNotifications
 
 /// Schedules repeating local notifications at the configured time / weekdays
 /// and re-focuses the app window when the user clicks them.
-final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
+final class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterDelegate {
 
     static let shared = NotificationManager()
     private override init() {
@@ -14,13 +15,24 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
 
     private let categoryID   = "STANDUP_REMINDER"
     private let identifierBase = "com.standapp.reminder"
+    @Published private(set) var authorizationStatus: UNAuthorizationStatus = .notDetermined
 
     // MARK: - Public API
 
     func requestAuthorization() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-            if granted {
-                // Nothing extra needed — scheduling happens separately.
+            _ = granted
+            _ = error
+            DispatchQueue.main.async {
+                self.refreshAuthorizationStatus()
+            }
+        }
+    }
+
+    func refreshAuthorizationStatus() {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            DispatchQueue.main.async {
+                self.authorizationStatus = settings.authorizationStatus
             }
         }
     }

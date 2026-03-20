@@ -3,10 +3,12 @@ import AppKit
 
 struct StandupFormView: View {
 
-    @EnvironmentObject private var settings: AppSettings
+    @Environment(AppSettings.self) private var settings
     @State private var copyConfirmed = false
+    @State private var alertMessage: String?
 
     var body: some View {
+        @Bindable var settings = settings
         VStack(spacing: 0) {
             // ── Header ────────────────────────────────────────────────────────
             headerBar
@@ -41,6 +43,16 @@ struct StandupFormView: View {
             actionBar
         }
         .background(Color(NSColor.windowBackgroundColor))
+        .alert("Unable to open Slack", isPresented: Binding(
+            get: { alertMessage != nil },
+            set: { isPresented in
+                if !isPresented { alertMessage = nil }
+            }
+        )) {
+            Button("OK", role: .cancel) { alertMessage = nil }
+        } message: {
+            Text(alertMessage ?? "")
+        }
     }
 
     // MARK: - Sub-views
@@ -72,16 +84,16 @@ struct StandupFormView: View {
             Text("🚧 Blockers")
                 .font(.headline)
 
-            // Toggle between "No blockers" and "Yes, I have blockers"
-            Picker("", selection: $settings.hasBlockers) {
-                Text("No Blockers").tag(false)
-                Text("Yes, I Have Blockers").tag(true)
+            Picker("", selection: $settings.blockerState) {
+                Text("Not Answered").tag(BlockerState.unanswered)
+                Text("No Blockers").tag(BlockerState.noBlockers)
+                Text("Yes, I Have Blockers").tag(BlockerState.hasBlockers)
             }
             .pickerStyle(.segmented)
             .labelsHidden()
-            .frame(maxWidth: 320)
+            .frame(maxWidth: 420)
 
-            if settings.hasBlockers {
+            if settings.blockerState == .hasBlockers {
                 StandupSectionView(
                     title: nil,
                     items: $settings.blockersItems
@@ -90,7 +102,7 @@ struct StandupFormView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .animation(.easeInOut(duration: 0.2), value: settings.hasBlockers)
+        .animation(.easeInOut(duration: 0.2), value: settings.blockerState)
     }
 
     private var actionBar: some View {
@@ -114,7 +126,7 @@ struct StandupFormView: View {
                 .font(.callout.bold())
             }
             .buttonStyle(.borderedProminent)
-            .disabled(isFormEmpty)
+            .disabled(!isFormReadyToSubmit)
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
@@ -128,10 +140,14 @@ struct StandupFormView: View {
         return preview.count < formatted.count ? String(preview) + "…" : String(preview)
     }
 
-    private var isFormEmpty: Bool {
-        let allEmpty = (settings.yesterdayItems + settings.todayItems)
-            .allSatisfy { $0.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
-        return allEmpty
+    private var isFormReadyToSubmit: Bool {
+        let yesterdayHasContent = settings.yesterdayItems
+            .contains { !$0.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+        let todayHasContent = settings.todayItems
+            .contains { !$0.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+        return yesterdayHasContent
+            && todayHasContent
+            && settings.blockerState != .unanswered
     }
 
     private func copyAndOpenSlack() {
@@ -152,21 +168,25 @@ struct StandupFormView: View {
         // Open Slack via URI scheme
         let uriString = settings.slackChannelUri
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        if !uriString.isEmpty, let url = URL(string: uriString) {
-            NSWorkspace.shared.open(url)
+        guard !uriString.isEmpty, let url = URL(string: uriString) else {
+            alertMessage = "Your standup was copied to the clipboard. Please verify the Slack URI in Settings and paste manually."
+            return
+        }
+        if !NSWorkspace.shared.open(url) {
+            alertMessage = "Slack could not be opened. Your standup is already copied to the clipboard; paste it manually."
         }
     }
 
     private func clearAll() {
         settings.yesterdayItems = [StandupItem()]
         settings.todayItems     = [StandupItem()]
-        settings.hasBlockers    = false
+        settings.blockerState   = .unanswered
         settings.blockersItems  = [StandupItem()]
     }
 }
 
 #Preview {
     StandupFormView()
-        .environmentObject(AppSettings())
+        .environment(AppSettings())
         .frame(width: 780, height: 560)
 }

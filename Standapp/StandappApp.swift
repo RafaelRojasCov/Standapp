@@ -3,7 +3,7 @@ import SwiftUI
 @main
 struct StandappApp: App {
 
-    @StateObject private var settings = AppSettings()
+    @State private var settings = AppSettings()
 
     init() {
         // Touch the shared instance early so the UNUserNotificationCenterDelegate
@@ -14,7 +14,7 @@ struct StandappApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(settings)
+                .environment(settings)
                 .frame(minWidth: 780, minHeight: 560)
         }
         .windowResizability(.contentMinSize)
@@ -24,7 +24,7 @@ struct StandappApp: App {
 
         Settings {
             SettingsView()
-                .environmentObject(settings)
+                .environment(settings)
         }
     }
 }

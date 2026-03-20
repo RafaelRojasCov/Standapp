@@ -28,29 +28,31 @@ struct SettingsView: View {
                     Text("JIRA Base URL")
                         .font(.headline)
                     TextField(
-                        "https://company.atlassian.net",
-                        text: $bindableSettings.jiraBaseUrl
+                        text: $bindableSettings.jiraBaseUrl,
+                        prompt: Text("https://company.atlassian.net")
                     )
                     .textFieldStyle(.roundedBorder)
+                    .frame(maxWidth: .infinity)
                     Text("Example: https://company.atlassian.net")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-
-                Divider()
+                .frame(maxWidth: .infinity, alignment: .leading)
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Slack Channel URI")
                         .font(.headline)
                     TextField(
-                        "slack://channel?team=T123&id=C123",
-                        text: $bindableSettings.slackChannelUri
+                        text: $bindableSettings.slackChannelUri,
+                        prompt: Text("slack://channel?team=T123&id=C123")
                     )
                     .textFieldStyle(.roundedBorder)
+                    .frame(maxWidth: .infinity)
                     Text("Example: slack://channel?team=T123&id=C123")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             } header: {
                 Text("Integrations")
                     .font(.headline)

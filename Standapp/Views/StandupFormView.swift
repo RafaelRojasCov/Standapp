@@ -6,42 +6,41 @@ struct StandupFormView: View {
     @Environment(AppSettings.self) private var settings
     @State private var copyConfirmed = false
     @State private var alertMessage: String?
-    private let previewMinHeight: CGFloat = 88
 
     var body: some View {
         @Bindable var bindableSettings = settings
-        VStack(spacing: 0) {
-            // ── Header ────────────────────────────────────────────────────────
-            headerBar
+        HStack(spacing: 0) {
+            VStack(spacing: 0) {
+                ScrollView {
+                    VStack(spacing: 24) {
+                        StandupSectionView(
+                            title: "🗓 Yesterday",
+                            items: $bindableSettings.yesterdayItems
+                        )
 
-            Divider()
+                        Divider()
 
-            // ── Scrollable sections ───────────────────────────────────────────
-            ScrollView {
-                VStack(spacing: 24) {
-                    StandupSectionView(
-                        title: "🗓 Yesterday",
-                        items: $bindableSettings.yesterdayItems
-                    )
+                        StandupSectionView(
+                            title: "📋 Today",
+                            items: $bindableSettings.todayItems
+                        )
 
-                    Divider()
+                        Divider()
 
-                    StandupSectionView(
-                        title: "📋 Today",
-                        items: $bindableSettings.todayItems
-                    )
-
-                    Divider()
-
-                    blockersSection
+                        blockersSection
+                    }
+                    .padding(20)
                 }
-                .padding(20)
+
+                Divider()
+
+                actionBar
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
 
             Divider()
 
-            // ── Action bar ────────────────────────────────────────────────────
-            actionBar
+            previewPanel
         }
         .background(Color(NSColor.windowBackgroundColor))
         .alert("Unable to open Slack", isPresented: Binding(
@@ -58,28 +57,6 @@ struct StandupFormView: View {
 
     // MARK: - Sub-views
 
-    private var headerBar: some View {
-        HStack {
-            Image(systemName: "bubble.left.and.bubble.right")
-                .font(.title2)
-                .foregroundColor(.accentColor)
-            Text("Daily Standup")
-                .font(.title2).bold()
-            Spacer()
-            Button(role: .destructive) {
-                clearAll()
-            } label: {
-                Label("Clear", systemImage: "trash")
-                    .font(.callout)
-            }
-            .buttonStyle(.borderless)
-            .foregroundColor(.secondary)
-            .help("Clear all entries")
-        }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 12)
-    }
-
     private var blockersSection: some View {
         @Bindable var viewSettings = settings
         return VStack(alignment: .leading, spacing: 12) {
@@ -93,6 +70,7 @@ struct StandupFormView: View {
             .pickerStyle(.segmented)
             .labelsHidden()
             .frame(maxWidth: 420)
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             if viewSettings.blockerState == .hasBlockers {
                 StandupSectionView(
@@ -108,15 +86,6 @@ struct StandupFormView: View {
 
     private var actionBar: some View {
         HStack {
-            // Preview area
-            Text(previewText)
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .lineLimit(4)
-                .frame(maxWidth: .infinity, minHeight: previewMinHeight, alignment: .topLeading)
-
-            Spacer(minLength: 12)
-
             Button {
                 copyAndOpenSlack()
             } label: {
@@ -129,16 +98,29 @@ struct StandupFormView: View {
             .buttonStyle(.borderedProminent)
             .disabled(!isFormReadyToSubmit)
         }
+        .frame(maxWidth: .infinity, alignment: .trailing)
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
+    }
+
+    private var previewPanel: some View {
+        ScrollView {
+            Text(markdownPreviewText)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+                .textSelection(.enabled)
+                .padding(20)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     // MARK: - Helpers
 
     private var previewText: String {
-        let formatted = StandupFormatter(settings: settings).format()
-        let preview   = formatted.prefix(120)
-        return preview.count < formatted.count ? String(preview) + "…" : String(preview)
+        StandupFormatter(settings: settings).format()
+    }
+
+    private var markdownPreviewText: AttributedString {
+        (try? AttributedString(markdown: previewText)) ?? AttributedString(previewText)
     }
 
     private var isFormReadyToSubmit: Bool {
@@ -179,12 +161,6 @@ struct StandupFormView: View {
         }
     }
 
-    private func clearAll() {
-        settings.yesterdayItems = [StandupItem()]
-        settings.todayItems     = [StandupItem()]
-        settings.blockerState   = .noBlockers
-        settings.blockersItems  = [StandupItem()]
-    }
 }
 
 #Preview {

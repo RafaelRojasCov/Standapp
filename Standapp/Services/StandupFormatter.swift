@@ -10,15 +10,15 @@ struct StandupFormatter {
     func format() -> String {
         var lines: [String] = []
 
-        lines.append("*Yesterday*")
+        lines.append("**Yesterday**")
         lines.append(contentsOf: formatItems(settings.yesterdayItems))
 
         lines.append("")
-        lines.append("*Today*")
+        lines.append("**Today**")
         lines.append(contentsOf: formatItems(settings.todayItems))
 
         lines.append("")
-        lines.append("*Blockers*")
+        lines.append("**Blockers**")
         if settings.blockerState == .hasBlockers {
             lines.append(contentsOf: formatItems(settings.blockersItems))
         } else {
@@ -61,7 +61,7 @@ struct StandupFormatter {
             .appendingPathComponent("browse")
             .appendingPathComponent(ticketId)
             .absoluteString
-        return "(<\(url)|\(safeLabel)>)"
+        return "[\(safeLabel)](\(url))"
     }
 
     private func sanitizeSlackLabel(_ text: String) -> String {

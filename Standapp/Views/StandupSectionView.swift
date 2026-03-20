@@ -19,21 +19,6 @@ struct StandupSectionView: View {
                     .font(.headline)
             }
 
-            HStack(spacing: 10) {
-                Text("Status")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                Text("Ticket")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .frame(width: ticketFieldWidth, alignment: .leading)
-
-                Color.clear
-                    .frame(width: removeButtonWidth)
-            }
-
             ForEach($items) { $item in
                 StandupItemRowView(item: $item, ticketFieldWidth: ticketFieldWidth, removeButtonWidth: removeButtonWidth) {
                     removeItem(item)

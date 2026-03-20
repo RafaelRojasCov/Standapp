@@ -168,7 +168,9 @@ struct StandupFormView: View {
         // Open Slack via URI scheme
         let uriString = settings.slackChannelUri
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !uriString.isEmpty, let url = URL(string: uriString) else {
+        guard !uriString.isEmpty,
+              let url = URL(string: uriString),
+              url.scheme?.lowercased() == "slack" else {
             alertMessage = "Your standup was copied to the clipboard. Please verify the Slack URI in Settings and paste manually."
             return
         }

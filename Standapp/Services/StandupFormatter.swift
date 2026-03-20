@@ -49,10 +49,25 @@ struct StandupFormatter {
         let base = settings.jiraBaseUrl
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        let safeLabel = sanitizeSlackLabel(ticketId)
 
         if base.isEmpty {
-            return "(\(ticketId))"
+            return "(\(safeLabel))"
         }
-        return "(<\(base)/browse/\(ticketId)|\(ticketId)>)"
+        guard let baseURL = URL(string: "\(base)/") else {
+            return "(\(safeLabel))"
+        }
+        let url = baseURL
+            .appendingPathComponent("browse")
+            .appendingPathComponent(ticketId)
+            .absoluteString
+        return "(<\(url)|\(safeLabel)>)"
+    }
+
+    private func sanitizeSlackLabel(_ text: String) -> String {
+        text
+            .replacingOccurrences(of: "|", with: "¦")
+            .replacingOccurrences(of: "<", with: "‹")
+            .replacingOccurrences(of: ">", with: "›")
     }
 }

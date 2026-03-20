@@ -86,16 +86,17 @@ final class SettingsStore {
 
     func save(_ settings: AppSettings) {
         guard !settings.isLoading else { return }
-        let profile = StandupProfile(
-            name: "Default",
-            jiraBaseUrl: settings.jiraBaseUrl,
-            slackChannelUri: settings.slackChannelUri,
-            scheduledWeekdays: Array(settings.scheduledWeekdays),
-            scheduledHour: settings.scheduledHour,
-            scheduledMinute: settings.scheduledMinute
-        )
+        var profiles = settings.profiles
+        if profiles.isEmpty {
+            profiles = [StandupProfile()]
+        }
+        profiles[0].jiraBaseUrl = settings.jiraBaseUrl
+        profiles[0].slackChannelUri = settings.slackChannelUri
+        profiles[0].scheduledWeekdays = Array(settings.scheduledWeekdays)
+        profiles[0].scheduledHour = settings.scheduledHour
+        profiles[0].scheduledMinute = settings.scheduledMinute
         let snapshot = Snapshot(
-            profiles: [profile],
+            profiles: profiles,
             yesterdayItems: settings.yesterdayItems,
             todayItems: settings.todayItems,
             blockerState: settings.blockerState,
@@ -113,16 +114,13 @@ final class SettingsStore {
         else { return }
 
         settings.isLoading          = true
-        guard let profile = snapshot.profiles.first else {
-            settings.isLoading = false
-            return
-        }
-        settings.profiles           = snapshot.profiles
-        settings.jiraBaseUrl        = profile.jiraBaseUrl
-        settings.slackChannelUri    = profile.slackChannelUri
-        settings.scheduledWeekdays  = Set(profile.scheduledWeekdays)
-        settings.scheduledHour      = profile.scheduledHour
-        settings.scheduledMinute    = profile.scheduledMinute
+        let profile = snapshot.profiles.first ?? StandupProfile()
+        settings.profiles = snapshot.profiles.isEmpty ? [profile] : snapshot.profiles
+        settings.jiraBaseUrl = profile.jiraBaseUrl
+        settings.slackChannelUri = profile.slackChannelUri
+        settings.scheduledWeekdays = Set(profile.scheduledWeekdays)
+        settings.scheduledHour = profile.scheduledHour
+        settings.scheduledMinute = profile.scheduledMinute
         settings.yesterdayItems     = snapshot.yesterdayItems
         settings.todayItems         = snapshot.todayItems
         settings.blockerState       = snapshot.blockerState

@@ -16,6 +16,7 @@ struct ContentView: View {
                     }
                     .labelStyle(.titleAndIcon)
                     .help("Clear all entries")
+                    .padding(.horizontal, 5)
                 }
                 ToolbarItem(placement: .automatic) {
                     Button {
@@ -25,6 +26,7 @@ struct ContentView: View {
                     }
                     .labelStyle(.titleAndIcon)
                     .help("Open Settings")
+                    .padding(.horizontal, 5)
                 }
             }
             .sheet(isPresented: $showSettings) {

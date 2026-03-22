@@ -32,17 +32,27 @@ struct StandupFormatter {
 
     private func formatItems(_ items: [StandupItem]) -> [String] {
         items.compactMap { item in
-            let trimmedText   = item.text.trimmingCharacters(in: .whitespacesAndNewlines)
-            let trimmedTicket = item.ticketId.trimmingCharacters(in: .whitespacesAndNewlines)
+            let trimmedText = item.text.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !trimmedText.isEmpty else { return nil }
 
-            if trimmedTicket.isEmpty {
+            let ticketParts = item.tickets
+                .filter { !$0.id.trimmingCharacters(in: .whitespaces).isEmpty }
+                .map { ticketFragment($0) }
+
+            if ticketParts.isEmpty {
                 return "• \(trimmedText)"
             }
 
-            let ticketLink = makeTicketLink(trimmedTicket)
-            return "• \(trimmedText) \(ticketLink)"
+            return "• \(trimmedText) \(ticketParts.joined(separator: ", "))"
         }
+    }
+
+    /// Formats a single ticket as `KEY [Status]` or `[KEY](url) [Status]`.
+    private func ticketFragment(_ ticket: SelectedTicket) -> String {
+        let key = ticket.id.trimmingCharacters(in: .whitespaces)
+        let link = makeTicketLink(key)
+        let badge = ticket.statusName.isEmpty ? "" : " **\(ticket.statusName)**"
+        return "\(link)\(badge)"
     }
 
     private func makeTicketLink(_ ticketId: String) -> String {
@@ -52,10 +62,10 @@ struct StandupFormatter {
         let safeLabel = sanitizeSlackLabel(ticketId)
 
         if base.isEmpty {
-            return "(\(safeLabel))"
+            return safeLabel
         }
         guard let baseURL = URL(string: "\(base)/") else {
-            return "(\(safeLabel))"
+            return safeLabel
         }
         let url = baseURL
             .appendingPathComponent("browse")
@@ -65,8 +75,6 @@ struct StandupFormatter {
     }
 
     private func sanitizeSlackLabel(_ text: String) -> String {
-        // Slack uses `<url|label>` markup; these replacements prevent label text
-        // from breaking the delimiter syntax when users type reserved characters.
         text
             .replacingOccurrences(of: "|", with: "¦")
             .replacingOccurrences(of: "<", with: "‹")

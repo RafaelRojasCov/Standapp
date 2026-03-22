@@ -6,6 +6,14 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var notificationManager = NotificationManager.shared
 
+    // MARK: - Jira credential state (write-only fields; token never pre-filled)
+    @State private var jiraSubdomain: String = ""
+    @State private var jiraEmail: String = ""
+    @State private var jiraApiToken: String = ""
+    @State private var jiraCredentialsSaved: Bool = false
+
+    private let keychain = KeychainManager.shared
+
     /// Weekday labels (index 0 = Sunday, 1 = Monday … 6 = Saturday)
     private let weekdayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
     private var hasGrantedNotificationPermission: Bool {
@@ -96,6 +104,9 @@ struct SettingsView: View {
                     .padding(16)
                     .background(Color(NSColor.controlBackgroundColor))
                     .cornerRadius(12)
+
+                    // ── Jira API section ──────────────────────────────────────────
+                    jiraSection
 
                     // ── Reminder Schedule section ──────────────────────────────────
                     VStack(alignment: .leading, spacing: 0) {
@@ -207,6 +218,116 @@ struct SettingsView: View {
         }
         .onAppear {
             notificationManager.refreshAuthorizationStatus()
+            // Pre-fill subdomain and email if already saved; never pre-fill token.
+            if let creds = try? keychain.loadJiraCredentials() {
+                jiraSubdomain = creds.subdomain
+                jiraEmail = creds.email
+                jiraCredentialsSaved = true
+            }
+        }
+    }
+
+    // MARK: - Jira Section
+
+    private var jiraSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Jira")
+                .font(.title2.bold())
+                .foregroundStyle(.primary)
+                .padding(.bottom, 12)
+
+            VStack(alignment: .leading, spacing: 16) {
+                // Subdomain
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Subdomain")
+                        .font(.headline)
+                    HStack(spacing: 6) {
+                        TextField("yourcompany", text: $jiraSubdomain)
+                            .textFieldStyle(.plain)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 8)
+                            .background(Color(NSColor.windowBackgroundColor))
+                            .cornerRadius(8)
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.white.opacity(0.08), lineWidth: 1))
+                        Text(".atlassian.net")
+                            .foregroundStyle(.secondary)
+                            .fixedSize()
+                    }
+                }
+
+                Divider()
+
+                // Email
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Email")
+                        .font(.headline)
+                    TextField("you@company.com", text: $jiraEmail)
+                        .textFieldStyle(.plain)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 8)
+                        .background(Color(NSColor.windowBackgroundColor))
+                        .cornerRadius(8)
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.white.opacity(0.08), lineWidth: 1))
+                }
+
+                Divider()
+
+                // API Token
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("API Token")
+                        .font(.headline)
+                    SecureField(jiraCredentialsSaved ? "Token saved — enter new token to replace" : "Paste your API token", text: $jiraApiToken)
+                        .textFieldStyle(.plain)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 8)
+                        .background(Color(NSColor.windowBackgroundColor))
+                        .cornerRadius(8)
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.white.opacity(0.08), lineWidth: 1))
+                    Text("Generate at id.atlassian.com → Security → API tokens")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Divider()
+
+                // Save / Remove row
+                HStack {
+                    if jiraCredentialsSaved {
+                        Button("Remove", role: .destructive) {
+                            keychain.deleteJiraCredentials()
+                            jiraSubdomain = ""
+                            jiraEmail = ""
+                            jiraApiToken = ""
+                            jiraCredentialsSaved = false
+                        }
+                        .foregroundStyle(.red)
+                    }
+                    Spacer()
+                    if jiraCredentialsSaved {
+                        Label("Saved in Keychain", systemImage: "lock.fill")
+                            .font(.caption)
+                            .foregroundStyle(.green)
+                    }
+                    Button("Save to Keychain") {
+                        let tokenToSave = jiraApiToken.isEmpty
+                            ? (try? keychain.loadJiraCredentials())?.apiToken ?? ""
+                            : jiraApiToken
+                        let creds = JiraCredentials(
+                            subdomain: jiraSubdomain,
+                            email: jiraEmail,
+                            apiToken: tokenToSave
+                        )
+                        try? keychain.saveJiraCredentials(creds)
+                        jiraApiToken = ""
+                        jiraCredentialsSaved = true
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(jiraSubdomain.isEmpty || jiraEmail.isEmpty || (!jiraCredentialsSaved && jiraApiToken.isEmpty))
+                }
+            }
+            .padding(16)
+            .background(Color(NSColor.controlBackgroundColor))
+            .cornerRadius(12)
         }
     }
 

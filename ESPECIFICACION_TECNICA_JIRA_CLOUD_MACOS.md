@@ -67,6 +67,7 @@ No incluye:
 - **Constructor injection obligatorio** en ViewModels:
   - `IssueSearchViewModel(networkService: JiraAPIClientProtocol, authProvider: AuthenticationProvider, logger: LoggerProtocol, clock: ClockProtocol?)`
 - Beneficios: testabilidad, desacoplamiento y sustitución futura de estrategia OAuth2.
+- `clock: ClockProtocol?` se incluye para controlar el tiempo de forma determinística en pruebas (por ejemplo, debouncing y backoff), evitando dependencia directa del reloj del sistema.
 
 ### 2.3 Contratos de red (POP)
 - `AuthenticationProvider`
@@ -87,7 +88,17 @@ No incluye:
 **Construcción JQL dinámica**
 - Formato requerido:
   - `assignee = currentUser() AND (summary ~ "*{searchTerm}*" OR key = "{searchTerm}")`
+- Nota: los asteriscos alrededor de `{searchTerm}` (`*...*`) representan comodines literales para búsqueda textual en JQL.
 - `searchTerm` debe normalizarse (trim) antes de construir JQL.
+- `searchTerm` debe escaparse/sanitizarse antes de interpolarse en JQL.
+- Caracteres literales de entrada a tratar explícitamente: `"`, `'`, `` ` ``, `\`, `/`, `=`, `(`, `)`, `[`, `]`, `{`, `}`, `:`, `?`, `*`, `~`, `!`, `^`.
+- Operadores reservados `AND`, `OR`, `NOT`: si provienen del texto de usuario, tratarlos como texto literal (no como operadores), encapsulando el término y aplicando escape cuando corresponda.
+- Regla de encapsulado/escape:
+  - Si el término contiene espacios o cualquier carácter especial, encapsular el término completo entre comillas.
+  - Dentro de comillas, escapar de forma explícita: `\` → `\\`, `"` → `\"`, `'` → `\'`, `` ` `` → `\``, `/` → `\/`, `=` → `\=`, `(` → `\(`, `)` → `\)`, `[` → `\[`, `]` → `\]`, `{` → `\{`, `}` → `\}`, `:` → `\:`, `?` → `\?`, `*` → `\*`, `~` → `\~`, `!` → `\!`, `^` → `\^`.
+  - Si el término no contiene espacios ni caracteres especiales, puede emitirse en formato simple.
+  - Tratar whitespace externo con `trim`; no emitir términos vacíos.
+- Referencia normativa: documentación oficial de Atlassian sobre sintaxis/escapado de JQL (tomar como fuente de verdad en implementación).
 - Si `searchTerm` vacío: no disparar búsqueda remota y limpiar resultados locales.
 
 **Payload mínimo**
@@ -299,4 +310,3 @@ Se considera completada la fase de diseño cuando:
 1. El equipo valida esta especificación como contrato técnico de implementación.
 2. Se aprueban interfaces de protocolo (auth/red/errores) y criterios AC.
 3. Se confirma trazabilidad entre F-SPEC, NF-SPEC, EC y AC.
-

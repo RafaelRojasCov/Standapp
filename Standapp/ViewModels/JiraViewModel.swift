@@ -44,7 +44,7 @@ final class JiraViewModel: ObservableObject {
 
         let normalized = subdomain.jiraNormalizedSubdomain
         guard !normalized.isEmpty else {
-            errorMessage = JiraError.invalidBaseURL.errorDescription
+            errorMessage = "Invalid or empty Jira subdomain. Verify your Settings value."
             return
         }
 
@@ -59,9 +59,7 @@ final class JiraViewModel: ObservableObject {
             }
         }
 
-        if failures.isEmpty {
-            errorMessage = nil
-        } else {
+        if !failures.isEmpty {
             errorMessage = "Could not open browser for: \(failures.joined(separator: ", "))."
         }
     }

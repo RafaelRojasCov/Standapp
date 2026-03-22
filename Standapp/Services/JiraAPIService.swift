@@ -63,6 +63,7 @@ struct JiraAPIService {
     private let authenticationProvider: AuthenticationProvider
     private let session: URLSession
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.standapp.Standapp", category: "Networking")
+    private let maxRetryAfterSeconds = 10
 
     init(authenticationProvider: AuthenticationProvider = BasicAuthenticationProvider(), session: URLSession = .shared) {
         self.authenticationProvider = authenticationProvider
@@ -117,8 +118,9 @@ struct JiraAPIService {
                     throw JiraError.unauthorized
                 case 429:
                     let rawRetryAfter = Int(httpResponse.value(forHTTPHeaderField: "Retry-After") ?? "") ?? 1
-                    let retryAfter = min(max(rawRetryAfter, 1), 10)
-                    logger.error("Jira rate limit reached. retry_after=\(rawRetryAfter) capped_retry_after=\(retryAfter)")
+                    let retryAfter = min(max(rawRetryAfter, 1), maxRetryAfterSeconds)
+                    let cappedFromMessage = rawRetryAfter > maxRetryAfterSeconds ? " (capped from \(rawRetryAfter))" : ""
+                    logger.error("Jira rate limit reached. retry_after=\(retryAfter)\(cappedFromMessage)")
                     if attempts < maxAttempts {
                         attempts += 1
                         try await Task.sleep(for: .seconds(Double(retryAfter)))

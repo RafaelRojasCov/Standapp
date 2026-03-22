@@ -7,6 +7,7 @@ protocol SlackNetworkService: Sendable {
     func fetchChannels(cursor: String?) async throws -> (channels: [SlackChannel], nextCursor: String?)
     func fetchChannelHistory(channelId: String, oldestTimestamp: TimeInterval) async throws -> [SlackThreadMessage]
     func fetchThreadReplies(channelId: String, ts: String) async throws -> [SlackMessage]
+    func fetchUsers() async throws -> [SlackUser]
     func dispatchMessage(to destination: DestinationType, text: String) async throws -> Bool
 }
 
@@ -108,7 +109,36 @@ final class SlackNetworkServiceImpl: SlackNetworkService, @unchecked Sendable {
             throw SlackError.apiError(message: response.error ?? "unknown")
         }
 
-        return (response.messages ?? []).compactMap { $0.toThreadMessage() }
+        let userMap = await MainActor.run {
+            Dictionary(uniqueKeysWithValues: SlackUserStore.shared.users.map { ($0.id, $0.username) })
+        }
+        return (response.messages ?? []).compactMap { raw in
+            let resolved = raw.user.flatMap { userMap[$0] }
+            return raw.toThreadMessage(resolvedUsername: resolved)
+        }
+    }
+
+    /// Fetches workspace members from `users.list`, filtering out bots and deleted accounts.
+    /// Requires scope: users:read
+    func fetchUsers() async throws -> [SlackUser] {
+        let token = try resolvedToken()
+
+        var components = URLComponents(url: baseURL.appendingPathComponent("users.list"), resolvingAgainstBaseURL: false)!
+        components.queryItems = [URLQueryItem(name: "limit", value: "200")]
+
+        var request = URLRequest(url: components.url!, timeoutInterval: requestTimeout)
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+        logger.debug("GET users.list")
+
+        let data = try await performWithRateLimit(request: request)
+        let response = try JSONDecoder().decode(SlackUsersListResponse.self, from: data)
+
+        if !response.ok {
+            throw SlackError.apiError(message: response.error ?? "unknown")
+        }
+
+        return (response.members ?? []).compactMap { $0.toUser() }
     }
 
     /// Fetches all replies in a thread via `conversations.replies`.

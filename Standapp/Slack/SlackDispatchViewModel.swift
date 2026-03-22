@@ -18,6 +18,8 @@ final class SlackDispatchViewModel {
     // MARK: - Immutable input
 
     let messageText: String
+    /// Tagged users from all standup items, used to resolve @username → <@userId> before dispatch.
+    let taggedUsers: [TaggedUser]
 
     // MARK: - Destination selection
 
@@ -84,9 +86,11 @@ final class SlackDispatchViewModel {
 
     init(
         messageText: String,
+        taggedUsers: [TaggedUser] = [],
         networkService: any SlackNetworkService = SlackNetworkServiceImpl()
     ) {
         self.messageText = messageText
+        self.taggedUsers = taggedUsers
         self.networkService = networkService
     }
 
@@ -197,8 +201,11 @@ final class SlackDispatchViewModel {
         inlineError = nil
         didSendSuccessfully = false
 
+        // Resolve @username → <@userId> before dispatch
+        let resolvedText = resolveMentions(in: messageText)
+
         do {
-            _ = try await networkService.dispatchMessage(to: destination, text: messageText)
+            _ = try await networkService.dispatchMessage(to: destination, text: resolvedText)
             isSending = false
             didSendSuccessfully = true
             logger.debug("Message dispatched to \(String(describing: destination))")
@@ -264,6 +271,15 @@ final class SlackDispatchViewModel {
     }
 
     // MARK: - Helpers
+
+    /// Replaces `@username` tokens with Slack `<@userId>` mentions using taggedUsers.
+    private func resolveMentions(in text: String) -> String {
+        var result = text
+        for user in taggedUsers {
+            result = result.replacingOccurrences(of: "@\(user.username)", with: "<@\(user.id)>")
+        }
+        return result
+    }
 
     private func errorMessage(from error: Error) -> String {
         (error as? LocalizedError)?.errorDescription ?? error.localizedDescription

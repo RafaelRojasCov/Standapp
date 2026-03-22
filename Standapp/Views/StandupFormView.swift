@@ -48,7 +48,7 @@ struct StandupFormView: View {
         }
         .background(Color(NSColor.windowBackgroundColor))
         .sheet(isPresented: $showSlackDispatch) {
-            SlackDispatchView(messageText: previewText)
+            SlackDispatchView(messageText: previewText, taggedUsers: allTaggedUsers)
         }
     }
 
@@ -118,6 +118,13 @@ struct StandupFormView: View {
         )
         return (try? AttributedString(markdown: previewText, options: options))
             ?? AttributedString(previewText)
+    }
+
+    /// Collects all unique tagged users across all standup sections.
+    private var allTaggedUsers: [TaggedUser] {
+        let all = settings.yesterdayItems + settings.todayItems + settings.blockersItems
+        var seen = Set<String>()
+        return all.flatMap { $0.taggedUsers }.filter { seen.insert($0.id).inserted }
     }
 
     private var isFormReadyToSubmit: Bool {

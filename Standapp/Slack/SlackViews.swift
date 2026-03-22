@@ -44,8 +44,8 @@ struct SlackDispatchView: View {
     @State private var viewModel: SlackDispatchViewModel
     @Environment(\.dismiss) private var dismiss
 
-    init(messageText: String) {
-        _viewModel = State(initialValue: SlackDispatchViewModel(messageText: messageText))
+    init(messageText: String, taggedUsers: [TaggedUser] = []) {
+        _viewModel = State(initialValue: SlackDispatchViewModel(messageText: messageText, taggedUsers: taggedUsers))
     }
 
     var body: some View {

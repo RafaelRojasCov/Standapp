@@ -13,6 +13,14 @@
 		0781BB942F6F9E1000F488C0 /* JiraNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0781BB932F6F9E1000F488C0 /* JiraNetworkService.swift */; };
 		0781BB962F6F9E2A00F488C0 /* JiraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0781BB952F6F9E2A00F488C0 /* JiraViewModel.swift */; };
 		0781BB982F6F9E5400F488C0 /* JiraViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0781BB972F6F9E5400F488C0 /* JiraViews.swift */; };
+		0781BB9B2F704E6200F488C0 /* SlackModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0781BB9A2F704E6200F488C0 /* SlackModels.swift */; };
+		0781BB9D2F704E7B00F488C0 /* SlackKeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0781BB9C2F704E7B00F488C0 /* SlackKeychainStorage.swift */; };
+		0781BB9F2F704E9F00F488C0 /* SlackNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0781BB9E2F704E9F00F488C0 /* SlackNetworkService.swift */; };
+		0781BBA12F704EC900F488C0 /* SlackViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0781BBA02F704EC900F488C0 /* SlackViewModel.swift */; };
+		0781BBA32F704EFA00F488C0 /* SlackViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0781BBA22F704EFA00F488C0 /* SlackViews.swift */; };
+		0781BBA52F70515900F488C0 /* SecureStorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0781BBA42F70515900F488C0 /* SecureStorageService.swift */; };
+		0781BBA72F7053CC00F488C0 /* SlackDispatchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0781BBA62F7053CC00F488C0 /* SlackDispatchViewModel.swift */; };
+		0781BBA92F70694300F488C0 /* SlackUserStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0781BBA82F70694300F488C0 /* SlackUserStore.swift */; };
 		1B979BAC9EBB4E608E16647A /* StandupItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F9840DBE8AB4B5C9F990BFF /* StandupItem.swift */; };
 		1D01A83DD68549FA927036AC /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DF196A1650441F0B26F70E5 /* NotificationManager.swift */; };
 		4863BEC0318A423DA86C206E /* StandupFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D799A490FF554E14B83A8B43 /* StandupFormatter.swift */; };
@@ -32,6 +40,14 @@
 		0781BB932F6F9E1000F488C0 /* JiraNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JiraNetworkService.swift; sourceTree = "<group>"; };
 		0781BB952F6F9E2A00F488C0 /* JiraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JiraViewModel.swift; sourceTree = "<group>"; };
 		0781BB972F6F9E5400F488C0 /* JiraViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JiraViews.swift; sourceTree = "<group>"; };
+		0781BB9A2F704E6200F488C0 /* SlackModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlackModels.swift; sourceTree = "<group>"; };
+		0781BB9C2F704E7B00F488C0 /* SlackKeychainStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlackKeychainStorage.swift; sourceTree = "<group>"; };
+		0781BB9E2F704E9F00F488C0 /* SlackNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlackNetworkService.swift; sourceTree = "<group>"; };
+		0781BBA02F704EC900F488C0 /* SlackViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlackViewModel.swift; sourceTree = "<group>"; };
+		0781BBA22F704EFA00F488C0 /* SlackViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlackViews.swift; sourceTree = "<group>"; };
+		0781BBA42F70515900F488C0 /* SecureStorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureStorageService.swift; sourceTree = "<group>"; };
+		0781BBA62F7053CC00F488C0 /* SlackDispatchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlackDispatchViewModel.swift; sourceTree = "<group>"; };
+		0781BBA82F70694300F488C0 /* SlackUserStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlackUserStore.swift; sourceTree = "<group>"; };
 		2F9840DBE8AB4B5C9F990BFF /* StandupItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandupItem.swift; sourceTree = "<group>"; };
 		3989D014D15E4FBE9F3F543E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3C0DE0221AF7444B9DE31FAD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -70,6 +86,20 @@
 			path = Jira;
 			sourceTree = "<group>";
 		};
+		0781BB992F704E4E00F488C0 /* Slack */ = {
+			isa = PBXGroup;
+			children = (
+				0781BB9A2F704E6200F488C0 /* SlackModels.swift */,
+				0781BB9C2F704E7B00F488C0 /* SlackKeychainStorage.swift */,
+				0781BB9E2F704E9F00F488C0 /* SlackNetworkService.swift */,
+				0781BBA02F704EC900F488C0 /* SlackViewModel.swift */,
+				0781BBA22F704EFA00F488C0 /* SlackViews.swift */,
+				0781BBA62F7053CC00F488C0 /* SlackDispatchViewModel.swift */,
+				0781BBA82F70694300F488C0 /* SlackUserStore.swift */,
+			);
+			path = Slack;
+			sourceTree = "<group>";
+		};
 		645C04D1EB9D4BBD8B2F1EBD /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -103,6 +133,7 @@
 				BD5C766B6FE04DBFA63FB7F0 /* SettingsStore.swift */,
 				D799A490FF554E14B83A8B43 /* StandupFormatter.swift */,
 				3DF196A1650441F0B26F70E5 /* NotificationManager.swift */,
+				0781BBA42F70515900F488C0 /* SecureStorageService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -127,6 +158,7 @@
 				3C0DE0221AF7444B9DE31FAD /* Info.plist */,
 				8167E22132FB4F5686BE8901 /* Standapp.entitlements */,
 				0781BB8E2F6F9DC900F488C0 /* Jira */,
+				0781BB992F704E4E00F488C0 /* Slack */,
 			);
 			path = Standapp;
 			sourceTree = "<group>";
@@ -201,8 +233,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				02A154491B2F4AD2908DCD7D /* StandappApp.swift in Sources */,
+				0781BBA92F70694300F488C0 /* SlackUserStore.swift in Sources */,
 				E92AC0066E584BF2B2CE0AC6 /* ContentView.swift in Sources */,
 				A3FBA8FD19FC4D6BAFC66675 /* StandupFormView.swift in Sources */,
+				0781BBA72F7053CC00F488C0 /* SlackDispatchViewModel.swift in Sources */,
 				91A318FFC7F248E4B8CBF8F0 /* StandupSectionView.swift in Sources */,
 				D77E8199D998413A9E0573B2 /* SettingsView.swift in Sources */,
 				0781BB942F6F9E1000F488C0 /* JiraNetworkService.swift in Sources */,
@@ -214,7 +248,13 @@
 				1D01A83DD68549FA927036AC /* NotificationManager.swift in Sources */,
 				BD54175A52C4436C838AFDB3 /* SettingsStore.swift in Sources */,
 				4863BEC0318A423DA86C206E /* StandupFormatter.swift in Sources */,
+				0781BBA52F70515900F488C0 /* SecureStorageService.swift in Sources */,
+				0781BB9D2F704E7B00F488C0 /* SlackKeychainStorage.swift in Sources */,
+				0781BB9B2F704E6200F488C0 /* SlackModels.swift in Sources */,
+				0781BBA12F704EC900F488C0 /* SlackViewModel.swift in Sources */,
 				0781BB982F6F9E5400F488C0 /* JiraViews.swift in Sources */,
+				0781BB9F2F704E9F00F488C0 /* SlackNetworkService.swift in Sources */,
+				0781BBA32F704EFA00F488C0 /* SlackViews.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

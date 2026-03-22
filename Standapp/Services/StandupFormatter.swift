@@ -47,6 +47,8 @@ struct StandupFormatter {
         }
     }
 
+
+
     /// Formats a single ticket as `KEY [Status]` or `[KEY](url) [Status]`.
     private func ticketFragment(_ ticket: SelectedTicket) -> String {
         let key = ticket.id.trimmingCharacters(in: .whitespaces)

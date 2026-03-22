@@ -108,6 +108,9 @@ struct SettingsView: View {
                     // ── Jira API section ──────────────────────────────────────────
                     jiraSection
 
+                    // ── Slack API section ──────────────────────────────────────────
+                    slackSection
+
                     // ── Reminder Schedule section ──────────────────────────────────
                     VStack(alignment: .leading, spacing: 0) {
                         Text("Reminder Schedule")
@@ -328,6 +331,19 @@ struct SettingsView: View {
             .padding(16)
             .background(Color(NSColor.controlBackgroundColor))
             .cornerRadius(12)
+        }
+    }
+
+    // MARK: - Slack Section
+
+    private var slackSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Slack")
+                .font(.title2.bold())
+                .foregroundStyle(.primary)
+                .padding(.bottom, 12)
+
+            SlackPreferencesView()
         }
     }
 

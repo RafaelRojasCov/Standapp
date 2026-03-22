@@ -2,6 +2,21 @@
 
 A native macOS application (SwiftUI, macOS 14+) that streamlines daily standup reporting by formatting your answers and JIRA ticket links into clean Markdown for Slack.
 
+### Home screen
+<img width="1207" height="852" alt="image" src="https://github.com/user-attachments/assets/b5f99688-c56a-4240-ace2-7ebb6b8efa31" />
+
+### Settings
+<img width="1207" height="864" alt="image" src="https://github.com/user-attachments/assets/544f09f0-799c-4a68-96e0-70a3d3331028" />
+
+### Jira Ticket Search
+<img width="1207" height="852" alt="image" src="https://github.com/user-attachments/assets/e218c735-f68f-47b7-abe1-7c89be836db9" />
+
+### Send message to slack channel
+<img width="1207" height="852" alt="image" src="https://github.com/user-attachments/assets/288fa79f-a7b2-48e4-8f78-1d53403e94d6" />
+
+### Send message to a Thread in a Channel
+<img width="1207" height="852" alt="image" src="https://github.com/user-attachments/assets/3735e38a-091d-4d8d-afd5-733b9bf74c96" />
+
 ---
 
 ## Features

@@ -23,11 +23,15 @@ A native macOS application (SwiftUI, macOS 14+) that streamlines daily standup r
 
 | Feature | Details |
 |---|---|
-| **Dynamic form** | Three sections — Yesterday, Today, Blockers — each with unlimited rows (text area + ticket ID) |
-| **JIRA ticket linking** | Combines a configurable base URL with the ticket ID to produce `[TICKET-123](https://…/browse/TICKET-123)` |
-| **Blockers toggle** | "Not Answered / No Blockers / Yes, I Have Blockers" segmented control; disables submit until answered |
-| **Copy & Open Slack** | Aggregates all inputs into Markdown, copies to clipboard, then opens the configured Slack channel via URI scheme |
-| **Settings** | JIRA base URL, Slack channel URI, scheduled time & weekdays — all persisted via UserDefaults |
+| **Dynamic form** | Three sections — Yesterday, Today, Blockers — each with unlimited rows and inline editing |
+| **Multiple Jira tickets per row** | Each standup item supports zero, one, or many tickets (searched from Jira or entered manually) |
+| **Jira search + JQL** | Debounced Jira search with pagination, auto-detecting JQL queries and showing ticket status |
+| **Automatic Jira links** | Generates `[TICKET-123](https://…/browse/TICKET-123)` using your configured base URL |
+| **Slack mentions** | Supports `@username` tagging in entries and resolves mentions to Slack user IDs when sending |
+| **Send to Slack (channel or thread)** | Dispatch your standup directly to a channel or to a thread from the in-app picker |
+| **Multi-dispatch mode** | Option to keep the send modal open and send the same status to multiple channels |
+| **Blockers toggle** | "No Blockers / Yes, I Have Blockers" segmented control with conditional blockers section |
+| **Settings + secure credentials** | Jira and Slack credentials are stored securely in Keychain; app settings persist in UserDefaults |
 | **Scheduled notifications** | Local notifications at the configured time on selected weekdays; clicking focuses the app |
 | **Light / Dark mode** | Full native macOS aesthetic |
 
@@ -39,17 +43,19 @@ A native macOS application (SwiftUI, macOS 14+) that streamlines daily standup r
 Standapp/
 ├── StandappApp.swift          # @main entry point, Scene setup
 ├── Models/
-│   ├── StandupItem.swift      # Identifiable Codable model (text + ticketId)
-│   └── AppSettings.swift      # ObservableObject — all settings + today's draft
+│   ├── StandupItem.swift      # Standup entry model (text + tickets + tagged users)
+│   └── AppSettings.swift      # @Observable app state and preferences
 ├── Views/
 │   ├── ContentView.swift      # Root view (settings toolbar button)
 │   ├── StandupFormView.swift  # Main form (three sections + action bar)
-│   ├── StandupSectionView.swift # Dynamic rows with Add/Remove
-│   └── SettingsView.swift     # JIRA URL, Slack URI, scheduler
+│   ├── StandupSectionView.swift # Dynamic rows, ticket picker, mentions
+│   └── SettingsView.swift     # Integrations, credentials, notification schedule
 ├── Services/
 │   ├── SettingsStore.swift    # UserDefaults persistence (save/load)
 │   ├── StandupFormatter.swift # Produces the final Markdown string
 │   └── NotificationManager.swift # UNUserNotificationCenter scheduling
+├── Jira/                       # Jira credentials, search, models, picker UI
+├── Slack/                      # Slack token, channels/threads, dispatch UI
 ├── Assets.xcassets/           # App icon and accent color
 ├── Info.plist
 └── Standapp.entitlements
@@ -76,10 +82,18 @@ Standapp/
 
 Open **Settings** (gear icon in the toolbar or ⌘,):
 
-- **JIRA Base URL** — e.g. `https://company.atlassian.net`
+- **JIRA Base URL** — e.g. `https://company.atlassian.net` (used for Markdown ticket links)
+- **Jira credentials** — subdomain, email, and API token (stored in Keychain)
+- **Slack Bot Token** — required for loading channels/threads and sending messages (stored in Keychain)
 - **Slack Channel URI** — e.g. `slack://channel?team=T0001&id=C0001`
 - **Reminder Time & Days** — pick hour, minute, and weekdays; click **Save & Schedule**
 - Click **Request Notification Permission** on first launch.
+
+### Credential setup
+
+- **Jira API Token**: generate it at `https://id.atlassian.com/manage-profile/security/api-tokens`.
+- **Slack Bot Token**: create an app at `api.slack.com/apps` and copy the **Bot User OAuth Token** (`xoxb-...`).
+- Credentials are never displayed back in plain text once saved.
 
 ---
 
@@ -87,10 +101,11 @@ Open **Settings** (gear icon in the toolbar or ⌘,):
 
 1. At the scheduled time a system notification appears.  
 2. Click it — the app opens/focuses.  
-3. Fill in entries for Yesterday and Today; add ticket IDs (e.g. `DEV-101`).  
-4. Toggle blockers as needed.  
-5. Click **Copy Standup & Open Slack**.  
-6. Paste in Slack — the text is already formatted and the channel opens automatically.
+3. Fill in entries for Yesterday and Today; optionally tag teammates with `@username`.  
+4. Add one or multiple Jira tickets per row (search popup or manual key input).  
+5. Toggle blockers as needed.  
+6. Click **Send to Slack** and choose destination: **Channel** or **Thread**.  
+7. Send, and optionally keep the modal open with **Send to multiple channels**.
 
 ### Output example
 
@@ -104,3 +119,11 @@ Open **Settings** (gear icon in the toolbar or ⌘,):
 **Blockers**
 • No blockers
 ```
+
+---
+
+## Troubleshooting
+
+- **Slack Unauthorized (401)**: re-open Settings and save a valid bot token again.
+- **No Jira search results**: verify Jira credentials and try a broader query or explicit JQL.
+- **Notifications not showing**: ensure notification permission is enabled in macOS System Settings.

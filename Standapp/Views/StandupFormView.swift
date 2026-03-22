@@ -4,8 +4,7 @@ import AppKit
 struct StandupFormView: View {
 
     @Environment(AppSettings.self) private var settings
-    @State private var copyConfirmed = false
-    @State private var alertMessage: String?
+    @State private var showSlackDispatch = false
 
     var body: some View {
         @Bindable var bindableSettings = settings
@@ -48,15 +47,8 @@ struct StandupFormView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
         .background(Color(NSColor.windowBackgroundColor))
-        .alert("Unable to open Slack", isPresented: Binding(
-            get: { alertMessage != nil },
-            set: { isPresented in
-                if !isPresented { alertMessage = nil }
-            }
-        )) {
-            Button("OK", role: .cancel) { alertMessage = nil }
-        } message: {
-            Text(alertMessage ?? "")
+        .sheet(isPresented: $showSlackDispatch) {
+            SlackDispatchView(messageText: previewText)
         }
     }
 
@@ -91,13 +83,10 @@ struct StandupFormView: View {
     private var actionBar: some View {
         HStack {
             Button {
-                copyAndOpenSlack()
+                showSlackDispatch = true
             } label: {
-                Label(
-                    copyConfirmed ? "Copied! ✓" : "Copy Standup & Open Slack",
-                    systemImage: copyConfirmed ? "checkmark.circle.fill" : "doc.on.clipboard"
-                )
-                .font(.callout.bold())
+                Label("Send to Slack", systemImage: "paperplane.fill")
+                    .font(.callout.bold())
             }
             .buttonStyle(.borderedProminent)
             .disabled(!isFormReadyToSubmit)
@@ -138,35 +127,6 @@ struct StandupFormView: View {
             .contains { !$0.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
         return yesterdayHasContent
             && todayHasContent
-    }
-
-    private func copyAndOpenSlack() {
-        let text = StandupFormatter(settings: settings).format()
-
-        // Copy to clipboard
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(text, forType: .string)
-
-        // Provide brief visual confirmation
-        withAnimation {
-            copyConfirmed = true
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            withAnimation { self.copyConfirmed = false }
-        }
-
-        // Open Slack via URI scheme
-        let uriString = settings.slackChannelUri
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !uriString.isEmpty,
-              let url = URL(string: uriString),
-              url.scheme?.lowercased() == "slack" else {
-            alertMessage = "Your standup was copied to the clipboard. Please verify the Slack URI in Settings and paste manually."
-            return
-        }
-        if !NSWorkspace.shared.open(url) {
-            alertMessage = "Slack could not be opened. Your standup is already copied to the clipboard; paste it manually."
-        }
     }
 
 }

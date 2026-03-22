@@ -1,5 +1,4 @@
 import Foundation
-import Security
 import OSLog
 
 // MARK: - Keychain Protocol
@@ -10,7 +9,7 @@ protocol SecureStorage: Sendable {
     func delete(forKey key: String) throws
 }
 
-// MARK: - Keychain Error
+// MARK: - KeychainError (kept for API compatibility)
 
 enum KeychainError: LocalizedError {
     case itemNotFound
@@ -19,93 +18,51 @@ enum KeychainError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .itemNotFound:         return "Keychain item not found."
-        case .unexpectedData:       return "Keychain returned unexpected data format."
-        case .unhandledError(let s): return "Keychain error (OSStatus \(s))."
+        case .itemNotFound:          return "Item not found."
+        case .unexpectedData:        return "Unexpected data format."
+        case .unhandledError(let s): return "Storage error (OSStatus \(s))."
         }
     }
 }
 
 // MARK: - KeychainManager
+//
+// Stores Jira credentials using SecureStorageService:
+// master key lives in Keychain (one-time prompt), credentials are AES-256-GCM encrypted in UserDefaults.
 
 final class KeychainManager: SecureStorage, @unchecked Sendable {
 
     static let shared = KeychainManager()
 
-    private let service: String
+    private let storage = SecureStorageService.shared
     private let logger = Logger(subsystem: "com.standapp", category: "Keychain")
 
-    private init(service: String = "com.standapp.jira") {
-        self.service = service
-    }
+    private init() {}
 
     // MARK: - SecureStorage
 
     func save(_ value: String, forKey key: String) throws {
-        guard let data = value.data(using: .utf8) else { throw KeychainError.unexpectedData }
-
-        // Attempt update first; if not found, add new item.
-        let query = baseQuery(forKey: key)
-        let attributes: [CFString: Any] = [kSecValueData: data]
-
-        let updateStatus = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
-
-        if updateStatus == errSecItemNotFound {
-            var addQuery = query
-            addQuery[kSecValueData as String] = data
-            let addStatus = SecItemAdd(addQuery as CFDictionary, nil)
-            guard addStatus == errSecSuccess else {
-                logger.error("Keychain add failed for key '\(key)': \(addStatus)")
-                throw KeychainError.unhandledError(status: addStatus)
-            }
-        } else if updateStatus != errSecSuccess {
-            logger.error("Keychain update failed for key '\(key)': \(updateStatus)")
-            throw KeychainError.unhandledError(status: updateStatus)
+        do {
+            try storage.save(value, forKey: key)
+            logger.debug("Keychain: saved key '\(key)'")
+        } catch {
+            throw KeychainError.unhandledError(status: -1)
         }
-
-        logger.debug("Keychain item saved for key '\(key)'")
     }
 
     func load(forKey key: String) throws -> String {
-        var query = baseQuery(forKey: key)
-        query[kSecMatchLimit as String] = kSecMatchLimitOne
-        query[kSecReturnData as String] = kCFBooleanTrue
-
-        var item: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &item)
-
-        switch status {
-        case errSecSuccess:
-            guard let data = item as? Data, let value = String(data: data, encoding: .utf8) else {
-                throw KeychainError.unexpectedData
-            }
-            return value
-        case errSecItemNotFound:
+        do {
+            return try storage.load(forKey: key)
+        } catch SecureStorageError.itemNotFound {
             throw KeychainError.itemNotFound
-        default:
-            logger.error("Keychain load failed for key '\(key)': \(status)")
-            throw KeychainError.unhandledError(status: status)
+        } catch {
+            throw KeychainError.unhandledError(status: -1)
         }
     }
 
     func delete(forKey key: String) throws {
-        let query = baseQuery(forKey: key)
-        let status = SecItemDelete(query as CFDictionary)
-        guard status == errSecSuccess || status == errSecItemNotFound else {
-            logger.error("Keychain delete failed for key '\(key)': \(status)")
-            throw KeychainError.unhandledError(status: status)
-        }
-        logger.debug("Keychain item deleted for key '\(key)'")
-    }
-
-    // MARK: - Helpers
-
-    private func baseQuery(forKey key: String) -> [String: Any] {
-        [
-            kSecClass as String:       kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: key
-        ]
+        storage.delete(forKey: key)
+        logger.debug("Keychain: deleted key '\(key)'")
     }
 }
 
@@ -140,6 +97,8 @@ extension KeychainManager {
 
     /// Returns true only if all three credential keys are present.
     var hasJiraCredentials: Bool {
-        (try? loadJiraCredentials()) != nil
+        storage.contains(key: Keys.subdomain) &&
+        storage.contains(key: Keys.email) &&
+        storage.contains(key: Keys.apiToken)
     }
 }

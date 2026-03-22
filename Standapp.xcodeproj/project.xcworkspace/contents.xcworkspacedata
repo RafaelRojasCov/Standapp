@@ -4,4 +4,11 @@
    <FileRef
       location = "self:">
    </FileRef>
+   <Group
+      location = "group:StandappTests"
+      name = "StandappTests">
+      <FileRef
+         location = "group:SlackViewModelTests.swift">
+      </FileRef>
+   </Group>
 </Workspace>

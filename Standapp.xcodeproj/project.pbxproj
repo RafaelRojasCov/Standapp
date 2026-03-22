@@ -11,12 +11,18 @@
 		1B979BAC9EBB4E608E16647A /* StandupItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F9840DBE8AB4B5C9F990BFF /* StandupItem.swift */; };
 		1D01A83DD68549FA927036AC /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DF196A1650441F0B26F70E5 /* NotificationManager.swift */; };
 		4863BEC0318A423DA86C206E /* StandupFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D799A490FF554E14B83A8B43 /* StandupFormatter.swift */; };
+		56A4C2D248AF4F43B93F07CC /* JiraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBB692AD49C43F1ADAA4A89 /* JiraViewModel.swift */; };
 		6A624138C0EB4F408E140739 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C2865760D34A7BA23E7BE4 /* AppSettings.swift */; };
+		6D98D8B3233749D4A16A34AB /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF99D91A2254A2A8F36BA12 /* KeychainManager.swift */; };
 		91A318FFC7F248E4B8CBF8F0 /* StandupSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F06BECC0D1454202BE6159F0 /* StandupSectionView.swift */; };
 		A3FBA8FD19FC4D6BAFC66675 /* StandupFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03EAD8360974E9C92B76A01 /* StandupFormView.swift */; };
 		BD54175A52C4436C838AFDB3 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5C766B6FE04DBFA63FB7F0 /* SettingsStore.swift */; };
+		C13B8C28629A45588A17C07B /* JiraTicketsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 755C189A9DCD4B74995570A3 /* JiraTicketsView.swift */; };
+		C446427CD8B94468A0F7688F /* JiraModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5E3B55E46C444BCB2A04B63 /* JiraModels.swift */; };
 		D200E6B044EC41CEBB873C2F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3989D014D15E4FBE9F3F543E /* Assets.xcassets */; };
+		D65145A88E3848FF8BED0E0A /* JiraAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E9C7D574B944ABBA3B7A8F /* JiraAPIService.swift */; };
 		D77E8199D998413A9E0573B2 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8ED5B5CCEF8433D9BB49D9E /* SettingsView.swift */; };
+		E5F2D17DCBD3420DBA1D9F2A /* StatusBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C60B7D8D62984B3584D859CB /* StatusBadgeView.swift */; };
 		E92AC0066E584BF2B2CE0AC6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07215FCD5DF14E068F7E3F0E /* ContentView.swift */; };
 /* End PBXBuildFile section */
 
@@ -26,13 +32,19 @@
 		3989D014D15E4FBE9F3F543E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3C0DE0221AF7444B9DE31FAD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3DF196A1650441F0B26F70E5 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		5DF99D91A2254A2A8F36BA12 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
+		755C189A9DCD4B74995570A3 /* JiraTicketsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JiraTicketsView.swift; sourceTree = "<group>"; };
+		76E9C7D574B944ABBA3B7A8F /* JiraAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JiraAPIService.swift; sourceTree = "<group>"; };
 		8167E22132FB4F5686BE8901 /* Standapp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Standapp.entitlements; sourceTree = "<group>"; };
 		96C2865760D34A7BA23E7BE4 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		A5E3B55E46C444BCB2A04B63 /* JiraModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JiraModels.swift; sourceTree = "<group>"; };
 		A2B20C5B65D74C8887856499 /* StandappApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandappApp.swift; sourceTree = "<group>"; };
 		AD3B5633F2044B5CBD53F58C /* Standapp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Standapp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD5C766B6FE04DBFA63FB7F0 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		C03EAD8360974E9C92B76A01 /* StandupFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandupFormView.swift; sourceTree = "<group>"; };
+		C60B7D8D62984B3584D859CB /* StatusBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBadgeView.swift; sourceTree = "<group>"; };
 		D799A490FF554E14B83A8B43 /* StandupFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandupFormatter.swift; sourceTree = "<group>"; };
+		EDBB692AD49C43F1ADAA4A89 /* JiraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JiraViewModel.swift; sourceTree = "<group>"; };
 		F06BECC0D1454202BE6159F0 /* StandupSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandupSectionView.swift; sourceTree = "<group>"; };
 		F8ED5B5CCEF8433D9BB49D9E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -54,9 +66,19 @@
 				07215FCD5DF14E068F7E3F0E /* ContentView.swift */,
 				C03EAD8360974E9C92B76A01 /* StandupFormView.swift */,
 				F06BECC0D1454202BE6159F0 /* StandupSectionView.swift */,
+				755C189A9DCD4B74995570A3 /* JiraTicketsView.swift */,
+				C60B7D8D62984B3584D859CB /* StatusBadgeView.swift */,
 				F8ED5B5CCEF8433D9BB49D9E /* SettingsView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		81B1A1108BCF4D43B667963C /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				EDBB692AD49C43F1ADAA4A89 /* JiraViewModel.swift */,
+			);
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		8A075033093C47F8B46F034D /* Products */ = {
@@ -81,6 +103,8 @@
 				BD5C766B6FE04DBFA63FB7F0 /* SettingsStore.swift */,
 				D799A490FF554E14B83A8B43 /* StandupFormatter.swift */,
 				3DF196A1650441F0B26F70E5 /* NotificationManager.swift */,
+				5DF99D91A2254A2A8F36BA12 /* KeychainManager.swift */,
+				76E9C7D574B944ABBA3B7A8F /* JiraAPIService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -90,6 +114,7 @@
 			children = (
 				2F9840DBE8AB4B5C9F990BFF /* StandupItem.swift */,
 				96C2865760D34A7BA23E7BE4 /* AppSettings.swift */,
+				A5E3B55E46C444BCB2A04B63 /* JiraModels.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -99,6 +124,7 @@
 			children = (
 				A2B20C5B65D74C8887856499 /* StandappApp.swift */,
 				645C04D1EB9D4BBD8B2F1EBD /* Views */,
+				81B1A1108BCF4D43B667963C /* ViewModels */,
 				D8EF1E29082C4EF4920AC4F6 /* Models */,
 				B5272FF5C96C47ED8DDCE083 /* Services */,
 				3989D014D15E4FBE9F3F543E /* Assets.xcassets */,
@@ -181,11 +207,17 @@
 				E92AC0066E584BF2B2CE0AC6 /* ContentView.swift in Sources */,
 				A3FBA8FD19FC4D6BAFC66675 /* StandupFormView.swift in Sources */,
 				91A318FFC7F248E4B8CBF8F0 /* StandupSectionView.swift in Sources */,
+				C13B8C28629A45588A17C07B /* JiraTicketsView.swift in Sources */,
+				E5F2D17DCBD3420DBA1D9F2A /* StatusBadgeView.swift in Sources */,
 				D77E8199D998413A9E0573B2 /* SettingsView.swift in Sources */,
 				1B979BAC9EBB4E608E16647A /* StandupItem.swift in Sources */,
 				6A624138C0EB4F408E140739 /* AppSettings.swift in Sources */,
+				C446427CD8B94468A0F7688F /* JiraModels.swift in Sources */,
+				56A4C2D248AF4F43B93F07CC /* JiraViewModel.swift in Sources */,
 				1D01A83DD68549FA927036AC /* NotificationManager.swift in Sources */,
 				BD54175A52C4436C838AFDB3 /* SettingsStore.swift in Sources */,
+				6D98D8B3233749D4A16A34AB /* KeychainManager.swift in Sources */,
+				D65145A88E3848FF8BED0E0A /* JiraAPIService.swift in Sources */,
 				4863BEC0318A423DA86C206E /* StandupFormatter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -207,7 +239,7 @@
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
 				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
 				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
@@ -224,7 +256,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.standapp.Standapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -247,7 +279,7 @@
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
 				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
 				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
@@ -264,7 +296,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.standapp.Standapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -323,7 +355,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -377,7 +409,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;

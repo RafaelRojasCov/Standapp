@@ -28,6 +28,7 @@ final class SettingsStore {
         }
 
         private enum LegacyCodingKeys: String, CodingKey {
+            case jiraSubdomain
             case jiraBaseUrl
             case slackChannelUri
             case scheduledWeekdays
@@ -58,6 +59,7 @@ final class SettingsStore {
                !decodedProfiles.isEmpty {
                 profiles = decodedProfiles
             } else {
+                let jiraSubdomain = try legacyContainer.decodeIfPresent(String.self, forKey: .jiraSubdomain) ?? ""
                 let jiraBaseUrl = try legacyContainer.decodeIfPresent(String.self, forKey: .jiraBaseUrl) ?? ""
                 let slackChannelUri = try legacyContainer.decodeIfPresent(String.self, forKey: .slackChannelUri) ?? ""
                 let scheduledWeekdays = try legacyContainer.decodeIfPresent([Int].self, forKey: .scheduledWeekdays) ?? [2, 3, 4, 5, 6]
@@ -65,6 +67,7 @@ final class SettingsStore {
                 let scheduledMinute = try legacyContainer.decodeIfPresent(Int.self, forKey: .scheduledMinute) ?? 0
                 profiles = [StandupProfile(
                     name: "Default",
+                    jiraSubdomain: jiraSubdomain,
                     jiraBaseUrl: jiraBaseUrl,
                     slackChannelUri: slackChannelUri,
                     scheduledWeekdays: scheduledWeekdays,
@@ -105,6 +108,7 @@ final class SettingsStore {
             profiles = [makeDefaultProfile()]
         }
         profiles[0].jiraBaseUrl = settings.jiraBaseUrl
+        profiles[0].jiraSubdomain = settings.jiraSubdomain
         profiles[0].slackChannelUri = settings.slackChannelUri
         profiles[0].scheduledWeekdays = Array(settings.scheduledWeekdays)
         profiles[0].scheduledHour = settings.scheduledHour
@@ -131,6 +135,7 @@ final class SettingsStore {
         let profile = snapshot.profiles.first ?? StandupProfile()
         settings.profiles = snapshot.profiles.isEmpty ? [profile] : snapshot.profiles
         settings.jiraBaseUrl = profile.jiraBaseUrl
+        settings.jiraSubdomain = profile.jiraSubdomain
         settings.slackChannelUri = profile.slackChannelUri
         settings.scheduledWeekdays = Set(profile.scheduledWeekdays)
         settings.scheduledHour = profile.scheduledHour
@@ -145,6 +150,7 @@ final class SettingsStore {
     private func makeDefaultProfile() -> StandupProfile {
         StandupProfile(
             name: "Default",
+            jiraSubdomain: "",
             jiraBaseUrl: "",
             slackChannelUri: "",
             scheduledWeekdays: defaultWeekdays,

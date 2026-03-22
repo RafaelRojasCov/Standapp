@@ -43,6 +43,12 @@ struct StandupFormView: View {
 
                 Divider()
 
+                JiraTicketsView()
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
+
+                Divider()
+
                 actionBar
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)

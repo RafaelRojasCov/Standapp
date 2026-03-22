@@ -5,6 +5,9 @@ struct SettingsView: View {
     @Environment(AppSettings.self) private var settings
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var notificationManager = NotificationManager.shared
+    @State private var jiraEmail: String = ""
+    @State private var jiraAPIToken: String = ""
+    @State private var credentialError: String?
 
     /// Weekday labels (index 0 = Sunday, 1 = Monday … 6 = Saturday)
     private let weekdayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
@@ -53,6 +56,26 @@ struct SettingsView: View {
 
                     // ── Integrations section ───────────────────────────────────────
                     VStack(alignment: .leading, spacing: 16) {
+                        // Jira Subdomain
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Jira Subdomain")
+                                .font(.headline)
+                                .foregroundStyle(.primary)
+                            TextField("", text: $bindableSettings.jiraSubdomain, prompt: Text("company"))
+                                .textFieldStyle(.plain)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 8)
+                                .background(Color(NSColor.windowBackgroundColor))
+                                .cornerRadius(8)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                                )
+                            Text("Only subdomain, without https:// or .atlassian.net")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+
                         // JIRA Base URL
                         VStack(alignment: .leading, spacing: 8) {
                             Text("JIRA Base URL")
@@ -71,6 +94,39 @@ struct SettingsView: View {
                             Text("Example: https://company.atlassian.net")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
+                        }
+
+                        // Jira Credentials (Keychain)
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Jira Email")
+                                .font(.headline)
+                                .foregroundStyle(.primary)
+                            TextField("", text: $jiraEmail, prompt: Text("name@company.com"))
+                                .textFieldStyle(.plain)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 8)
+                                .background(Color(NSColor.windowBackgroundColor))
+                                .cornerRadius(8)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                                )
+                        }
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Jira API Token")
+                                .font(.headline)
+                                .foregroundStyle(.primary)
+                            SecureField("", text: $jiraAPIToken, prompt: Text("Stored securely in Keychain"))
+                                .textFieldStyle(.plain)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 8)
+                                .background(Color(NSColor.windowBackgroundColor))
+                                .cornerRadius(8)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                                )
                         }
 
                         // Slack Channel URL
@@ -184,6 +240,11 @@ struct SettingsView: View {
                             .foregroundStyle(.green)
                             .font(.caption)
                     }
+                    if let credentialError {
+                        Label(credentialError, systemImage: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.red)
+                            .font(.caption)
+                    }
                     HStack {
                         Spacer()
                         Button(requestPermissionButtonTitle) {
@@ -192,6 +253,16 @@ struct SettingsView: View {
                         .disabled(hasGrantedNotificationPermission)
 
                         Button("Save & Schedule") {
+                            do {
+                                let email = jiraEmail.trimmingCharacters(in: .whitespacesAndNewlines)
+                                let token = jiraAPIToken.trimmingCharacters(in: .whitespacesAndNewlines)
+                                try KeychainManager.shared.save(key: "jira.email", value: email)
+                                try KeychainManager.shared.save(key: "jira.apiToken", value: token)
+                                credentialError = nil
+                            } catch {
+                                credentialError = "Unable to save Jira credentials in Keychain."
+                                return
+                            }
                             notificationManager.reschedule(with: settings)
                             dismiss()
                         }
@@ -207,6 +278,8 @@ struct SettingsView: View {
         }
         .onAppear {
             notificationManager.refreshAuthorizationStatus()
+            jiraEmail = (try? KeychainManager.shared.retrieve(key: "jira.email")) ?? ""
+            jiraAPIToken = (try? KeychainManager.shared.retrieve(key: "jira.apiToken")) ?? ""
         }
     }
 

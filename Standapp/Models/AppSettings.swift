@@ -4,11 +4,57 @@ import Observation
 struct StandupProfile: Identifiable, Codable, Equatable {
     var id: UUID = UUID()
     var name: String = "Default"
+    var jiraSubdomain: String = ""
     var jiraBaseUrl: String = ""
     var slackChannelUri: String = ""
     var scheduledWeekdays: [Int] = [2, 3, 4, 5, 6]
     var scheduledHour: Int = 9
     var scheduledMinute: Int = 0
+
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case jiraSubdomain
+        case jiraBaseUrl
+        case slackChannelUri
+        case scheduledWeekdays
+        case scheduledHour
+        case scheduledMinute
+    }
+
+    init() {}
+
+    init(
+        id: UUID = UUID(),
+        name: String = "Default",
+        jiraSubdomain: String = "",
+        jiraBaseUrl: String = "",
+        slackChannelUri: String = "",
+        scheduledWeekdays: [Int] = [2, 3, 4, 5, 6],
+        scheduledHour: Int = 9,
+        scheduledMinute: Int = 0
+    ) {
+        self.id = id
+        self.name = name
+        self.jiraSubdomain = jiraSubdomain
+        self.jiraBaseUrl = jiraBaseUrl
+        self.slackChannelUri = slackChannelUri
+        self.scheduledWeekdays = scheduledWeekdays
+        self.scheduledHour = scheduledHour
+        self.scheduledMinute = scheduledMinute
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+        name = try container.decodeIfPresent(String.self, forKey: .name) ?? "Default"
+        jiraSubdomain = try container.decodeIfPresent(String.self, forKey: .jiraSubdomain) ?? ""
+        jiraBaseUrl = try container.decodeIfPresent(String.self, forKey: .jiraBaseUrl) ?? ""
+        slackChannelUri = try container.decodeIfPresent(String.self, forKey: .slackChannelUri) ?? ""
+        scheduledWeekdays = try container.decodeIfPresent([Int].self, forKey: .scheduledWeekdays) ?? [2, 3, 4, 5, 6]
+        scheduledHour = try container.decodeIfPresent(Int.self, forKey: .scheduledHour) ?? 9
+        scheduledMinute = try container.decodeIfPresent(Int.self, forKey: .scheduledMinute) ?? 0
+    }
 }
 
 enum BlockerState: String, Codable, CaseIterable {
@@ -26,6 +72,9 @@ final class AppSettings {
 
     // MARK: - Persisted settings
     var jiraBaseUrl: String = "" {
+        didSet { SettingsStore.shared.save(self) }
+    }
+    var jiraSubdomain: String = "" {
         didSet { SettingsStore.shared.save(self) }
     }
     var slackChannelUri: String = "" {

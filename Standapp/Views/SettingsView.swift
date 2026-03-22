@@ -256,9 +256,16 @@ struct SettingsView: View {
                             do {
                                 let email = jiraEmail.trimmingCharacters(in: .whitespacesAndNewlines)
                                 let token = jiraAPIToken.trimmingCharacters(in: .whitespacesAndNewlines)
-                                try KeychainManager.shared.save(key: "jira.email", value: email)
-                                try KeychainManager.shared.save(key: "jira.apiToken", value: token)
-                                credentialError = nil
+                                if email.isEmpty && token.isEmpty {
+                                    credentialError = nil
+                                } else if email.isEmpty || token.isEmpty {
+                                    credentialError = "Jira email and API token are required."
+                                    return
+                                } else {
+                                    try KeychainManager.shared.save(key: "jira.email", value: email)
+                                    try KeychainManager.shared.save(key: "jira.apiToken", value: token)
+                                    credentialError = nil
+                                }
                             } catch {
                                 credentialError = "Unable to save Jira credentials in Keychain."
                                 return

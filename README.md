@@ -1,6 +1,6 @@
 # Standapp — macOS Daily Standup Assistant
 
-A native macOS application (SwiftUI, macOS 13+) that streamlines daily standup reporting by formatting your answers and JIRA ticket links into clean Markdown for Slack.
+A native macOS application (SwiftUI, macOS 14+) that streamlines daily standup reporting by formatting your answers and JIRA ticket links into clean Markdown for Slack.
 
 ---
 
@@ -45,7 +45,7 @@ Standapp/
 
 ## Requirements
 
-- macOS 13.0 (Ventura) or later
+- macOS 14.0 (Sonoma) or later
 - Xcode 15 or later
 
 ---

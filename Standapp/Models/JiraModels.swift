@@ -63,7 +63,12 @@ struct JiraSearchResponse: Decodable {
     let issues: [JiraTicket]
 }
 
-struct JiraCredentials {
-    let email: String
-    let apiToken: String
+extension String {
+    var jiraNormalizedSubdomain: String {
+        trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "https://", with: "")
+            .replacingOccurrences(of: "http://", with: "")
+            .replacingOccurrences(of: ".atlassian.net", with: "")
+            .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+    }
 }

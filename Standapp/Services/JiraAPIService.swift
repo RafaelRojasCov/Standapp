@@ -13,8 +13,11 @@ struct BasicAuthenticationProvider: AuthenticationProvider {
     }
 
     func authenticate(_ request: inout URLRequest) async throws {
-        let email = try keychain.retrieve(key: "jira.email")
-        let token = try keychain.retrieve(key: "jira.apiToken")
+        let email = try keychain.retrieve(key: "jira.email").trimmingCharacters(in: .whitespacesAndNewlines)
+        let token = try keychain.retrieve(key: "jira.apiToken").trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !email.isEmpty, !token.isEmpty else {
+            throw JiraError.invalidCredentials
+        }
         let credentials = "\(email):\(token)"
         guard let encoded = credentials.data(using: .utf8)?.base64EncodedString() else {
             throw JiraError.invalidCredentials
@@ -67,12 +70,7 @@ struct JiraAPIService {
     }
 
     func searchTickets(subdomain: String, jql: String, startAt: Int, maxResults: Int = 50) async throws -> JiraSearchResponse {
-        let normalized = subdomain
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            .replacingOccurrences(of: "https://", with: "")
-            .replacingOccurrences(of: "http://", with: "")
-            .replacingOccurrences(of: ".atlassian.net", with: "")
-            .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        let normalized = subdomain.jiraNormalizedSubdomain
         guard !normalized.isEmpty,
               let url = URL(string: "https://\(normalized).atlassian.net/rest/api/3/search") else {
             throw JiraError.invalidBaseURL
@@ -118,8 +116,9 @@ struct JiraAPIService {
                 case 401:
                     throw JiraError.unauthorized
                 case 429:
-                    let retryAfter = Int(httpResponse.value(forHTTPHeaderField: "Retry-After") ?? "") ?? 1
-                    logger.error("Jira rate limit reached. retry_after=\(retryAfter)")
+                    let rawRetryAfter = Int(httpResponse.value(forHTTPHeaderField: "Retry-After") ?? "") ?? 1
+                    let retryAfter = min(max(rawRetryAfter, 1), 10)
+                    logger.error("Jira rate limit reached. retry_after=\(rawRetryAfter) capped_retry_after=\(retryAfter)")
                     if attempts < maxAttempts {
                         attempts += 1
                         try await Task.sleep(for: .seconds(Double(retryAfter)))

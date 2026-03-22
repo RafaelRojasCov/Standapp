@@ -39,15 +39,30 @@ final class JiraViewModel: ObservableObject {
     }
 
     func openSelectedInBrowser(subdomain: String) {
-        guard let selected = tickets.first(where: { selectedTicketIDs.contains($0.id) }) else { return }
-        let normalized = normalizeSubdomain(subdomain)
-        guard !normalized.isEmpty,
-              let url = URL(string: "https://\(normalized).atlassian.net/browse/\(selected.key)") else {
+        let selectedTickets = tickets.filter { selectedTicketIDs.contains($0.id) }
+        guard !selectedTickets.isEmpty else { return }
+
+        let normalized = subdomain.jiraNormalizedSubdomain
+        guard !normalized.isEmpty else {
             errorMessage = JiraError.invalidBaseURL.errorDescription
             return
         }
-        if !NSWorkspace.shared.open(url) {
-            errorMessage = "Could not open browser for ticket \(selected.key)."
+
+        var failures: [String] = []
+        for ticket in selectedTickets {
+            guard let url = URL(string: "https://\(normalized).atlassian.net/browse/\(ticket.key)") else {
+                failures.append(ticket.key)
+                continue
+            }
+            if !NSWorkspace.shared.open(url) {
+                failures.append(ticket.key)
+            }
+        }
+
+        if failures.isEmpty {
+            errorMessage = nil
+        } else {
+            errorMessage = "Could not open browser for: \(failures.joined(separator: ", "))."
         }
     }
 
@@ -59,7 +74,7 @@ final class JiraViewModel: ObservableObject {
     }
 
     private func fetchPage(subdomain: String, reset: Bool) async {
-        let normalized = normalizeSubdomain(subdomain)
+        let normalized = subdomain.jiraNormalizedSubdomain
         guard !normalized.isEmpty else {
             tickets = []
             selectedTicketIDs.removeAll()
@@ -107,12 +122,4 @@ final class JiraViewModel: ObservableObject {
         return "assignee = currentUser() AND (summary ~ \"*\(escaped)*\" OR key = \"\(escaped)\")"
     }
 
-    private func normalizeSubdomain(_ value: String) -> String {
-        value
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            .replacingOccurrences(of: "https://", with: "")
-            .replacingOccurrences(of: "http://", with: "")
-            .replacingOccurrences(of: ".atlassian.net", with: "")
-            .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-    }
 }

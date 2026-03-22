@@ -91,7 +91,7 @@ Open **Settings** (gear icon in the toolbar or ⌘,):
 
 ### Credential setup
 
-- **Jira API Token**: generate it at `id.atlassian.com` → **Security** → **API tokens**.
+- **Jira API Token**: generate it at `https://id.atlassian.com/manage-profile/security/api-tokens`.
 - **Slack Bot Token**: create an app at `api.slack.com/apps` and copy the **Bot User OAuth Token** (`xoxb-...`).
 - Credentials are never displayed back in plain text once saved.
 
